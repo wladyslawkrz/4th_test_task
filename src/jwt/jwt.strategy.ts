@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from 'src/entities';
 
+@Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(config: ConfigService) {
     super({
@@ -17,8 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         id: payload.sub,
       },
     });
-    const returnUser = delete user.toJSON().passwordHashed;
 
-    return returnUser;
+    const returnedUser = user.toJSON();
+    delete returnedUser.passwordHashed;
+
+    return returnedUser;
   }
 }
