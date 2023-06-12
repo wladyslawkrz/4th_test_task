@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { MeetupsModule } from './meetups/meetups.module';
 import * as models from './entities/index';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import * as models from './entities/index';
     }),
     UsersModule,
     MeetupsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
