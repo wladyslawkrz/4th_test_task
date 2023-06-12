@@ -1,11 +1,9 @@
 import {
   AllowNull,
   AutoIncrement,
-  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
-  ForeignKey,
   IsEmail,
   Length,
   Model,
@@ -13,7 +11,8 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
-import { Meetup, Role, UserOnMeetup } from '.';
+import { Meetup, UserOnMeetup } from '.';
+import { Role } from './enum';
 
 @Table({ tableName: 'users' })
 export class User extends Model<User> {
@@ -44,12 +43,8 @@ export class User extends Model<User> {
   lastName: string;
 
   @AllowNull(false)
-  @ForeignKey(() => Role)
-  @Column(DataType.INTEGER)
-  userRoleId: number;
-
-  @BelongsTo(() => Role)
-  role: Role;
+  @Column(DataType.ENUM(...Object.values(Role)))
+  userRole: number;
 
   @BelongsToMany(() => Meetup, () => UserOnMeetup)
   meetups: Meetup[];
