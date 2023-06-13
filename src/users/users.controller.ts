@@ -12,6 +12,7 @@ import { GetUser } from 'src/decorators';
 import { User } from 'src/entities';
 import { JwtGuard } from 'src/guard';
 import { UsersService } from './users.service';
+import { UpdateUserDto } from './dto';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -31,12 +32,13 @@ export class UsersController {
   }
 
   @Put('me')
-  updateMe() {
-    return 'updated';
+  updateMe(@GetUser() user: User, @Body() dto: UpdateUserDto) {
+    return this.usersService.updateMe(user.id, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('me')
-  deleteMe() {
-    return 'deleted';
+  deleteMe(@GetUser() user: User) {
+    return this.usersService.deleteMe(user.id);
   }
 }
