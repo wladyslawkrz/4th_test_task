@@ -44,7 +44,7 @@ export class User extends Model<User> {
 
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(Role)))
-  userRole: string;
+  userRole: Role;
 
   @BelongsToMany(() => Meetup, () => UserOnMeetup)
   meetups: Meetup[];
