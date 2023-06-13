@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/entities';
-import { GetAllUsersDto } from './dto/get-users.dto';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +11,6 @@ export class UsersService {
 
   async getAll() {
     const users = await this.usersRepository.findAll<User>();
-    return users.map((user) => new GetAllUsersDto(user));
+    return users.map((user) => new GetUsersDto(user));
   }
 }
