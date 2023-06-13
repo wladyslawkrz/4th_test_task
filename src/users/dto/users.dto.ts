@@ -1,11 +1,11 @@
 import { User } from 'src/entities';
 import { Role } from 'src/entities/enum';
 
-export class GetUsersDto {
-  readonly id: number;
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly userRole: Role;
+export class UsersDto {
+  id: number;
+  firstName: string;
+  lastName: string;
+  userRole: Role;
 
   constructor(user: User) {
     this.id = user.id;
