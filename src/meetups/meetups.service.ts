@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Meetup } from 'src/entities';
 
 @Injectable()
-export class MeetupsService {}
+export class MeetupsService {
+  constructor(
+    @Inject('MeetupsRepository') private readonly meetupsRepository: Meetup,
+  ) {}
+}

@@ -15,7 +15,7 @@ export class MeetupsController {
     return 'all of the meetups r here';
   }
 
-  @Get(':id')
+  @Get('find/:id')
   getMeetupById(@Param() params: any) {
     return `this is ${params.id} meetup`;
   }
@@ -31,11 +31,11 @@ export class MeetupsController {
   }
 
   @Delete('delete/:id')
-  deleteMeetup() {
+  deleteMeetup(@Param() params: any) {
     return 'meetup has been deleted';
   }
 
-  @Get()
+  @Get('find')
   getMeetups(
     @Query('search') search: string,
     @Query('filter') filter: string,
