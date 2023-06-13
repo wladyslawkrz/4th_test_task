@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -7,22 +8,26 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { MeetupsService } from './meetups.service';
+import { PostMeetupDto } from './dto/post.meetup.dto';
 
 @Controller('meetups')
 export class MeetupsController {
+  constructor(private meetupsService: MeetupsService) {}
+
   @Get()
   getAllMeetups() {
-    return 'all of the meetups r here';
+    return this.meetupsService.getAllMeetups();
   }
 
   @Get('find/:id')
-  getMeetupById(@Param() params: any) {
-    return `this is ${params.id} meetup`;
+  getMeetupById(@Param() id: any) {
+    return this.meetupsService.getMeetupById(id.id);
   }
 
   @Post('create')
-  createMeetup() {
-    return 'meetup has been created';
+  createMeetup(@Body() dto: PostMeetupDto) {
+    return this.meetupsService.postMeetup(dto);
   }
 
   @Put('update/:id')
