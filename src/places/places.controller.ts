@@ -1,5 +1,14 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { PlacesService } from './places.service';
+import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 
 @Controller('places')
 export class PlacesController {
@@ -7,21 +16,21 @@ export class PlacesController {
 
   @Get()
   getAllPlaces() {
-    return 'getAll';
+    return this.placesService.getAllPlaces();
   }
 
   @Post('create')
-  addPlace() {
-    return 'place has been added';
+  addPlace(@Body() dto: CreatePlaceDto) {
+    return this.placesService.addPlace(dto);
   }
 
   @Put('update/:id')
-  updatePlace() {
-    return 'place has been updated';
+  updatePlace(@Body() dto: UpdatePlaceDto, @Param() params: any) {
+    return this.placesService.updatePlace(dto, params.id);
   }
 
   @Delete('delete/:id')
-  deletePlace() {
-    return 'place has been deleted';
+  deletePlace(@Param() params: any) {
+    return this.placesService.deletePlace(params.id);
   }
 }
