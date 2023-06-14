@@ -67,6 +67,13 @@ export class MeetupsService {
     meetup.save();
   }
 
+  async deleteMeetup(meetupId: number) {
+    const meetup = await this.meetupsRepository.findByPk(meetupId);
+    if (!meetup) return new NotFoundException('This meetup was not found');
+
+    meetup.destroy();
+  }
+
   private getMeetingPlaceString(place: Place): string {
     if (!place) {
       return 'Venue not specified';

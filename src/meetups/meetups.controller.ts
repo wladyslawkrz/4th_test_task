@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -36,9 +38,10 @@ export class MeetupsController {
     return this.meetupsService.updateMeetupInfo(params.id, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
-    return 'meetup has been deleted';
+    return this.meetupsService.deleteMeetup(params.id);
   }
 
   @Get('find')
