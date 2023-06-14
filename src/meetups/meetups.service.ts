@@ -1,7 +1,8 @@
-import { Inject, Injectable, Post } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Meetup, Place } from 'src/entities';
 import { MeetupsDto } from './dto/meetups.dto';
 import { PostMeetupDto } from './dto/post.meetup.dto';
+import { UpdateMeetupDto } from './dto/update.meetup.dto';
 
 @Injectable()
 export class MeetupsService {
@@ -15,6 +16,7 @@ export class MeetupsService {
 
   async getAllMeetups() {
     const meetups = await this.meetupsRepository.findAll<Meetup>();
+
     return meetups.map(
       (meetup) =>
         new MeetupsDto(meetup, this.getMeetingPlaceString(meetup.place)),
@@ -23,6 +25,8 @@ export class MeetupsService {
 
   async getMeetupById(id: number) {
     const meetup = await this.meetupsRepository.findByPk<Meetup>(id);
+    if (!meetup) return new NotFoundException('This meetup was not found');
+
     return new MeetupsDto(meetup, this.getMeetingPlaceString(meetup.place));
   }
 
@@ -44,12 +48,36 @@ export class MeetupsService {
     meetup.save();
   }
 
+  async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
+    const meetup = await this.meetupsRepository.findByPk(meetupId);
+    if (!meetup) return new NotFoundException('This meetup was not found');
+
+    meetup.meetupName = dto.meetupName || meetup.meetupName;
+    meetup.meetupDescription = dto.meetupName || meetup.meetupDescription;
+    meetup.meetingTime = dto.meetingTime || meetup.meetingTime;
+    meetup.meetingPlaceId = dto.meetingPlaceId || meetup.meetingPlaceId;
+
+    if (dto.meetingPlaceId) {
+      const place = await this.placesRepository.findOne({
+        where: { id: dto.meetingPlaceId },
+      });
+      meetup.place = place;
+    }
+
+    meetup.save();
+  }
+
   private getMeetingPlaceString(place: Place): string {
+    if (!place) {
+      return 'Venue not specified';
+    }
+
     const { city, street, building, room } = place;
     let meetingPlaceString = city + ', ' + street + ', ' + building;
     if (room) {
       meetingPlaceString += ', Room ' + room;
     }
+
     return meetingPlaceString;
   }
 }

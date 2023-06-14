@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { MeetupsService } from './meetups.service';
 import { PostMeetupDto } from './dto/post.meetup.dto';
+import { UpdateMeetupDto } from './dto/update.meetup.dto';
 
 @Controller('meetups')
 export class MeetupsController {
@@ -21,8 +22,8 @@ export class MeetupsController {
   }
 
   @Get('find/:id')
-  getMeetupById(@Param() id: any) {
-    return this.meetupsService.getMeetupById(id.id);
+  getMeetupById(@Param() params: any) {
+    return this.meetupsService.getMeetupById(params.id);
   }
 
   @Post('create')
@@ -31,8 +32,8 @@ export class MeetupsController {
   }
 
   @Put('update/:id')
-  updateMeetupInfo() {
-    return 'meetup info has been updated';
+  updateMeetupInfo(@Param() params: any, @Body() dto: UpdateMeetupDto) {
+    return this.meetupsService.updateMeetupInfo(params.id, dto);
   }
 
   @Delete('delete/:id')
