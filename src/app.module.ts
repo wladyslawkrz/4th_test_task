@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MeetupsModule } from './meetups/meetups.module';
 import * as models from './entities/index';
 import { AuthModule } from './auth/auth.module';
+import { TagsModule } from './tags/tags.module';
+import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     MeetupsModule,
     AuthModule,
+    TagsModule,
+    PlacesModule,
   ],
 })
 export class AppModule {}
