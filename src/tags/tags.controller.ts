@@ -8,8 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
-import { CreateTagDto } from './dto/create.tag.dto';
-import { UpdateTagDto } from './dto/update.tag.dto';
+import { CreateTagDto, UpdateTagDto } from './dto';
 
 @Controller('tags')
 export class TagsController {
