@@ -2,7 +2,7 @@
   "name": "4th_test_task",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "wladyslawkrz <v.kvetkovsky@yandex.by>",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -84,5 +84,7 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "main": "index.js",
+  "repository": "git@github.com:wladyslawkrz/4th_test_task.git"
 }
