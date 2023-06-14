@@ -1,24 +1,37 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { TagsService } from './tags.service';
+import { CreateTagDto } from './dto/create.tag.dto';
+import { UpdateTagDto } from './dto/update.tag.dto';
 
 @Controller('tags')
 export class TagsController {
+  constructor(private tagsService: TagsService) {}
+
   @Get()
   getAllTags() {
-    return 'all tags';
+    return this.tagsService.getAll();
   }
 
   @Post('create')
-  createTag() {
-    return 'tag created';
+  createTag(@Body() dto: CreateTagDto) {
+    return this.tagsService.createTag(dto);
   }
 
   @Put('update/:id')
-  updateTag() {
-    return 'tag updated';
+  updateTag(@Param() params: any, @Body() dto: UpdateTagDto) {
+    return this.tagsService.updateTag(dto, params.id);
   }
 
   @Delete('delete/:id')
-  deleteTag() {
-    return 'tag deleted';
+  deleteTag(@Param() params: any) {
+    return this.tagsService.deleteTag(params.id);
   }
 }
