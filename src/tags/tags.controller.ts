@@ -19,6 +19,11 @@ export class TagsController {
     return this.tagsService.getAll();
   }
 
+  @Get(':id')
+  getTag(@Param() params: any) {
+    return this.tagsService.getTag(params.id);
+  }
+
   @Post('create')
   createTag(@Body() dto: CreateTagDto) {
     return this.tagsService.createTag(dto);

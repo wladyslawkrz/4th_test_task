@@ -12,6 +12,13 @@ export class TagsService {
     return tags.map((tag) => new TagsDto(tag));
   }
 
+  async getTag(id: number) {
+    const tag = await this.tagsRepository.findByPk(id);
+    if (!tag) return new NotFoundException();
+
+    return new TagsDto(tag);
+  }
+
   async createTag(dto: CreateTagDto) {
     const tag = new Tag();
 
