@@ -6,7 +6,7 @@ import { MeetupsModule } from './meetups/meetups.module';
 import { AuthModule } from './auth/auth.module';
 import { TagsModule } from './tags/tags.module';
 import { PlacesModule } from './places/places.module';
-import { sequelizeConfig } from './sequelize.config';
+import * as models from './entities/index';
 
 @Module({
   imports: [
@@ -14,7 +14,22 @@ import { sequelizeConfig } from './sequelize.config';
       envFilePath: `.${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
-    SequelizeModule.forRoot(sequelizeConfig),
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      models: Object.values(models),
+      autoLoadModels: true,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+    }),
     UsersModule,
     MeetupsModule,
     AuthModule,
