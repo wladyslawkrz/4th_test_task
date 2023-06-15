@@ -19,6 +19,11 @@ export class PlacesController {
     return this.placesService.getAllPlaces();
   }
 
+  @Get(':id')
+  getPlace(@Param() params: any) {
+    return this.placesService.getPlace(params.id);
+  }
+
   @Post('create')
   addPlace(@Body() dto: CreatePlaceDto) {
     return this.placesService.addPlace(dto);

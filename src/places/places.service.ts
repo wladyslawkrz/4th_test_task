@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Place } from 'src/entities';
 import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
 
@@ -12,6 +12,13 @@ export class PlacesService {
     const places = await this.placesRepository.findAll<Place>();
 
     return places.map((place) => new PlacesDto(place));
+  }
+
+  async getPlace(id: number) {
+    const place = await this.placesRepository.findByPk(id);
+    if (!place) return new NotFoundException();
+
+    return new PlacesDto(place);
   }
 
   async addPlace(dto: CreatePlaceDto) {
