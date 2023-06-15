@@ -1,8 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Meetup, Place } from 'src/entities';
-import { MeetupsDto } from './dto/meetups.dto';
-import { PostMeetupDto } from './dto/post.meetup.dto';
-import { UpdateMeetupDto } from './dto/update.meetup.dto';
+import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from './dto';
 
 @Injectable()
 export class MeetupsService {
@@ -14,13 +12,19 @@ export class MeetupsService {
     private readonly placesRepository: typeof Place,
   ) {}
 
-  async getAllMeetups() {
-    const meetups = await this.meetupsRepository.findAll<Meetup>();
+  async getAllMeetups(page: number, limit: number) {
+    const meetups = await this.meetupsRepository.findAndCountAll<Meetup>({
+      limit: limit,
+      offset: limit * (page - 1),
+    });
 
-    return meetups.map(
+    const { count, rows } = meetups;
+    rows.map(
       (meetup) =>
         new MeetupsDto(meetup, this.getMeetingPlaceString(meetup.place)),
     );
+
+    return { count, page, limit, rows };
   }
 
   async getMeetupById(id: number) {
@@ -72,6 +76,16 @@ export class MeetupsService {
     if (!meetup) return new NotFoundException('This meetup was not found');
 
     meetup.destroy();
+  }
+
+  async findMeetups(
+    search: string | undefined,
+    filter: string | undefined,
+    sort: string | undefined,
+  ) {
+    const meetups = await this.meetupsRepository.findAll<Meetup>();
+
+    // if(filter)
   }
 
   private getMeetingPlaceString(place: Place): string {

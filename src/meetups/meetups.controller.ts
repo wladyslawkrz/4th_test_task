@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -13,14 +15,18 @@ import {
 import { MeetupsService } from './meetups.service';
 import { PostMeetupDto } from './dto/post.meetup.dto';
 import { UpdateMeetupDto } from './dto/update.meetup.dto';
+import { PaginationPipe } from './pipes';
 
 @Controller('meetups')
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
   @Get()
-  getAllMeetups() {
-    return this.meetupsService.getAllMeetups();
+  getAllMeetups(
+    @Query('page', new PaginationPipe(1)) page: number,
+    @Query('limit', new PaginationPipe(10)) limit: number,
+  ) {
+    return this.meetupsService.getAllMeetups(page, limit);
   }
 
   @Get('find/:id')
@@ -45,7 +51,7 @@ export class MeetupsController {
   }
 
   @Get('find')
-  getMeetups(
+  findMeetups(
     @Query('search') search: string,
     @Query('filter') filter: string,
     @Query('sort') sort: string,
