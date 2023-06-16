@@ -22,9 +22,11 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       },
     });
 
+    const refreshToken = req.get('authorization').replace('Bearer', '').trim();
+
     const returnedUser = user.toJSON();
     delete returnedUser.passwordHashed;
 
-    return returnedUser;
+    return { refreshToken, returnedUser };
   }
 }

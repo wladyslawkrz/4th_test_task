@@ -11,20 +11,25 @@ import * as argon from 'argon2';
 import * as models from '../entities';
 import { Role } from 'src/entities/enum';
 import { UniqueConstraintError } from 'sequelize';
+import { Tokens } from './types/tokens.type';
 
 @Injectable({})
 export class AuthService {
   constructor(private jwt: JwtService, private config: ConfigService) {}
 
-  async signUp(dto: AuthDto) {
+  async signUp(dto: AuthDto): Promise<Tokens> {
     const passwordHashed = await argon.hash(dto.password);
 
     try {
-      await models.User.create({
+      const newUser = await models.User.create({
         email: dto.email,
         passwordHashed: passwordHashed,
         userRole: Role.regularUser,
       });
+
+      const tokens = await this.getTokens(newUser.id, newUser.email);
+
+      return tokens;
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
         throw new HttpException(
@@ -48,29 +53,40 @@ export class AuthService {
       user.passwordHashed,
       dto.password,
     );
+
     if (!passwordMatches)
       throw new ForbiddenException('The given credentials are incorrect.');
 
-    return this.signToken(user.id, user.email);
+    return this.getTokens(user.id, user.email);
   }
 
-  async signToken(
-    userId: number,
-    email: string,
-  ): Promise<{ access_token: string }> {
-    const payload = {
-      sub: userId,
-      email,
-    };
-
-    const secret = this.config.get('JWT_SECRET_KEY');
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: '60m',
-      secret: secret,
-    });
+  async getTokens(userId: number, email: string): Promise<Tokens> {
+    const [access, refresh] = await Promise.all([
+      this.jwt.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: this.config.get('JWT_SECRET_KEY'),
+          expiresIn: '30m',
+        },
+      ),
+      this.jwt.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          secret: this.config.get('JWT_REFRESH_KEY'),
+          expiresIn: '1w',
+        },
+      ),
+    ]);
 
     return {
-      access_token: token,
+      access_token: access,
+      refresh_token: refresh,
     };
   }
 }
