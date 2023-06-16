@@ -28,6 +28,7 @@ export class AuthService {
       });
 
       const tokens = await this.getTokens(newUser.id, newUser.email);
+      await this.updateRefreshTokenHash(newUser.id, tokens.refresh_token);
 
       return tokens;
     } catch (error) {
@@ -88,5 +89,17 @@ export class AuthService {
       access_token: access,
       refresh_token: refresh,
     };
+  }
+
+  async updateRefreshTokenHash(userId: number, refreshToken: string) {
+    const hash = await argon.hash(refreshToken);
+    await models.User.update(
+      {
+        refreshToken: hash,
+      },
+      {
+        where: { id: userId },
+      },
+    );
   }
 }

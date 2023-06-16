@@ -46,6 +46,10 @@ export class User extends Model<User> {
   @Column(DataType.ENUM(...Object.values(Role)))
   userRole: Role;
 
+  @AllowNull
+  @Column(DataType.STRING)
+  refreshToken: string;
+
   @BelongsToMany(() => Meetup, () => UserOnMeetup)
   meetups: Meetup[];
 }
