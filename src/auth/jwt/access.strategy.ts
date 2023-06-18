@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { User } from 'src/entities';
+import { JwtPayload } from '../types';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -13,16 +13,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    const user = await User.findOne({
-      where: {
-        id: payload.sub,
-      },
-    });
-
-    const returnedUser = user.toJSON();
-    delete returnedUser.passwordHashed;
-
-    return returnedUser;
+  async validate(payload: JwtPayload) {
+    return payload;
   }
 }
