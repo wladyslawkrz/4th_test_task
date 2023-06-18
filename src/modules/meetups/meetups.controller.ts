@@ -1,21 +1,21 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
-import { MeetupsService } from './meetups.service';
-import { PostMeetupDto } from './dto/post.meetup.dto';
-import { UpdateMeetupDto } from './dto/update.meetup.dto';
-import { PaginationPipe } from './pipes';
+import {
+  PostMeetupDto,
+  UpdateMeetupDto,
+  PaginationPipe,
+  MeetupsService,
+} from '.';
 
 @Controller('meetups')
 export class MeetupsController {
@@ -48,14 +48,5 @@ export class MeetupsController {
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
     return this.meetupsService.deleteMeetup(params.id);
-  }
-
-  @Get('find')
-  findMeetups(
-    @Query('search') search: string,
-    @Query('filter') filter: string,
-    @Query('sort') sort: string,
-  ) {
-    return 'search/filter/sort';
   }
 }

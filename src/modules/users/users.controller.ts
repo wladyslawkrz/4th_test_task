@@ -8,13 +8,12 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorators';
+import { GetUser } from 'src/common';
 import { User } from 'src/entities';
-import { JwtGuard } from 'src/auth/guard';
-import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto';
+import { JwtAccessGuard } from 'src/common';
+import { UsersService, UpdateUserDto } from '.';
 
-@UseGuards(JwtGuard)
+@UseGuards(JwtAccessGuard)
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}

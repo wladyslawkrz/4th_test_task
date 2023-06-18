@@ -9,11 +9,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthDto } from './dto';
-import { AuthService } from './auth.service';
-import { JwtAccessGuard, JwtRefreshGuard } from './guard';
-import { GetUser, GetUserId } from './decorators';
-import { UniqueConstraintExceptionFilter } from './filters';
+import { AuthDto, AuthService } from '.';
+import {
+  JwtAccessGuard,
+  JwtRefreshGuard,
+  GetUser,
+  GetUserId,
+  UniqueConstraintExceptionFilter,
+} from 'src/common';
 
 @UseFilters(UniqueConstraintExceptionFilter)
 @Controller('auth')

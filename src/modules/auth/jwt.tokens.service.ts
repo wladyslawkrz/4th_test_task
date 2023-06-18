@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { Tokens } from './types';
 import { Response } from 'express';
+import { Tokens } from 'src/common/types';
 import { User } from 'src/entities';
 
 @Injectable()

@@ -4,9 +4,7 @@ import { Op } from 'sequelize';
 import { Response } from 'express';
 import { Role } from 'src/entities/enum';
 import { User } from 'src/entities';
-import { JwtTokensService } from './jwt.tokens.service';
-import { AuthDto } from './dto';
-import { UsersRepository } from './auth.provider';
+import { JwtTokensService, AuthDto, UsersRepository } from '.';
 
 @Injectable()
 export class AuthService {

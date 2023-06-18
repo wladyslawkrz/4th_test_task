@@ -7,8 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { TagsService } from './tags.service';
-import { CreateTagDto, UpdateTagDto } from './dto';
+import { CreateTagDto, UpdateTagDto, TagsService } from '.';
 
 @Controller('tags')
 export class TagsController {

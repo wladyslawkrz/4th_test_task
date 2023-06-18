@@ -7,8 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { PlacesService } from './places.service';
-import { CreatePlaceDto, UpdatePlaceDto } from './dto';
+import { CreatePlaceDto, UpdatePlaceDto, PlacesService } from '.';
 
 @Controller('places')
 export class PlacesController {

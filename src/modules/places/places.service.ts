@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Place } from 'src/entities';
-import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
+import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from '.';
 
 @Injectable()
 export class PlacesService {

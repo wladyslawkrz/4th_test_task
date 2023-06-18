@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Meetup, Place } from 'src/entities';
-import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from './dto';
+import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from '.';
 
 @Injectable()
 export class MeetupsService {
@@ -76,16 +76,6 @@ export class MeetupsService {
     if (!meetup) return new NotFoundException('This meetup was not found');
 
     meetup.destroy();
-  }
-
-  async findMeetups(
-    search: string | undefined,
-    filter: string | undefined,
-    sort: string | undefined,
-  ) {
-    const meetups = await this.meetupsRepository.findAll<Meetup>();
-
-    // if(filter)
   }
 
   private getMeetingPlaceString(place: Place): string {

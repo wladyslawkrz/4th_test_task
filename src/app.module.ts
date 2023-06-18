@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { MeetupsModule } from './meetups/meetups.module';
-import { AuthModule } from './auth/auth.module';
-import { TagsModule } from './tags/tags.module';
-import { PlacesModule } from './places/places.module';
-import * as models from './entities/index';
+import {
+  AuthModule,
+  MeetupsModule,
+  PlacesModule,
+  TagsModule,
+  UsersModule,
+} from './modules';
+import * as models from './entities';
 
 @Module({
   imports: [
