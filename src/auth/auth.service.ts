@@ -1,48 +1,34 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { AuthDto } from './dto';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
-import * as models from '../entities';
+import { Op } from 'sequelize';
+import { Response } from 'express';
 import { Role } from 'src/entities/enum';
-import { UniqueConstraintError } from 'sequelize';
-import { Tokens } from './types/tokens.type';
+import { User } from 'src/entities';
+import { JwtTokensService } from './jwt.tokens.service';
+import { AuthDto } from './dto';
+import { UsersRepository } from './auth.provider';
 
-@Injectable({})
+@Injectable()
 export class AuthService {
-  constructor(private jwt: JwtService, private config: ConfigService) {}
+  constructor(
+    private jwt: JwtTokensService,
+    @Inject(UsersRepository) private readonly usersRepository: typeof User,
+  ) {}
 
-  async signUp(dto: AuthDto): Promise<Tokens> {
+  async signUp(dto: AuthDto, response: Response) {
     const passwordHashed = await argon.hash(dto.password);
 
-    try {
-      const newUser = await models.User.create({
-        email: dto.email,
-        passwordHashed: passwordHashed,
-        userRole: Role.regularUser,
-      });
+    const newUser = await this.usersRepository.create({
+      email: dto.email,
+      passwordHashed: passwordHashed,
+      userRole: Role.regularUser,
+    });
 
-      const tokens = await this.getTokens(newUser.id, newUser.email);
-      await this.updateRefreshTokenHash(newUser.id, tokens.refresh_token);
-
-      return tokens;
-    } catch (error) {
-      if (error instanceof UniqueConstraintError) {
-        throw new HttpException(
-          'Email is already in use.',
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
+    await this.jwt.getTokensAndSendThem(newUser.id, newUser.email, response);
   }
 
-  async signIn(dto: AuthDto) {
-    const user = await models.User.findOne({
+  async signIn(dto: AuthDto, response: Response) {
+    const user = await this.usersRepository.findOne({
       where: {
         email: dto.email,
       },
@@ -58,48 +44,43 @@ export class AuthService {
     if (!passwordMatches)
       throw new ForbiddenException('The given credentials are incorrect.');
 
-    return this.getTokens(user.id, user.email);
+    await this.jwt.getTokensAndSendThem(user.id, user.email, response);
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
-    const [access, refresh] = await Promise.all([
-      this.jwt.signAsync(
-        {
-          sub: userId,
-          email,
-        },
-        {
-          secret: this.config.get('JWT_SECRET_KEY'),
-          expiresIn: '30m',
-        },
-      ),
-      this.jwt.signAsync(
-        {
-          sub: userId,
-          email,
-        },
-        {
-          secret: this.config.get('JWT_REFRESH_KEY'),
-          expiresIn: '1w',
-        },
-      ),
-    ]);
-
-    return {
-      access_token: access,
-      refresh_token: refresh,
-    };
-  }
-
-  async updateRefreshTokenHash(userId: number, refreshToken: string) {
-    const hash = await argon.hash(refreshToken);
-    await models.User.update(
+  async logout(userId: number, response: Response) {
+    await this.usersRepository.update(
+      { refreshToken: null },
       {
-        refreshToken: hash,
-      },
-      {
-        where: { id: userId },
+        where: {
+          id: userId,
+          refreshToken: { [Op.ne]: null },
+        },
       },
     );
+
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+  }
+
+  async refreshTokens(
+    userId: number,
+    refreshToken: string,
+    response: Response,
+  ) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user || !user.refreshToken)
+      throw new ForbiddenException('Access denied');
+
+    const refreshTokenMatches = await argon.verify(
+      user.refreshToken,
+      refreshToken,
+    );
+    if (!refreshTokenMatches) throw new ForbiddenException('Access denied');
+
+    await this.jwt.getTokensAndSendThem(user.id, user.email, response);
   }
 }
