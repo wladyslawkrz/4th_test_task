@@ -1,5 +1,5 @@
-import { User } from 'src/entities';
-import { Role } from 'src/entities/enum';
+import { User } from 'src/database/entities';
+import { Role } from 'src/database/entities/enum';
 
 export class UsersDto {
   id: number;

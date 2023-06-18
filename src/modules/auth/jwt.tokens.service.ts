@@ -4,14 +4,15 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { Response } from 'express';
 import { Tokens } from 'src/common/types';
-import { User } from 'src/entities';
+import { User } from 'src/database/entities';
+import { UsersRepository } from './auth.provider';
 
 @Injectable()
 export class JwtTokensService {
   constructor(
     private jwt: JwtService,
     private config: ConfigService,
-    @Inject('UsersRepository') private readonly usersRepository: typeof User,
+    @Inject(UsersRepository) private readonly usersRepository: typeof User,
   ) {}
 
   async getBothTokens(userId: number, email: string): Promise<Tokens> {

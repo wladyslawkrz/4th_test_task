@@ -1,4 +1,4 @@
-import { Place } from 'src/entities';
+import { Place } from 'src/database/entities';
 
 export const placesProviders = [
   { provide: 'PlacesRepository', useValue: Place },

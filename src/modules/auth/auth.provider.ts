@@ -1,4 +1,4 @@
-import { User } from 'src/entities';
+import { User } from 'src/database/entities';
 
 export const UsersRepository = Symbol('UsersRepository');
 

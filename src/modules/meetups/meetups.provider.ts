@@ -1,4 +1,4 @@
-import { Meetup, Place } from 'src/entities';
+import { Meetup, Place } from 'src/database/entities';
 
 export const meetupsProviders = [
   { provide: 'MeetupsRepository', useValue: Meetup },

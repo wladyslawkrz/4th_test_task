@@ -1,4 +1,4 @@
-import { Place } from 'src/entities';
+import { Place } from 'src/database/entities';
 
 export class PlacesDto {
   city: string;

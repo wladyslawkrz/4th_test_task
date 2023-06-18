@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Meetup, Place } from 'src/entities';
-import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from '.';
+import { Meetup, Place } from 'src/database/entities';
+import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from './dto';
 
 @Injectable()
 export class MeetupsService {

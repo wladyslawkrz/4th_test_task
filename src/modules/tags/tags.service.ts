@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Tag } from 'src/entities';
-import { TagsDto, CreateTagDto, UpdateTagDto } from '.';
+import { Tag } from 'src/database/entities';
+import { CreateTagDto, TagsDto, UpdateTagDto } from './dto';
 
 @Injectable()
 export class TagsService {

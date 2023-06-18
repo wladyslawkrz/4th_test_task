@@ -1,4 +1,4 @@
-import { Tag } from 'src/entities';
+import { Tag } from 'src/database/entities';
 
 export class TagsDto {
   tagName: string;

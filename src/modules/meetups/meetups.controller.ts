@@ -10,12 +10,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import {
-  PostMeetupDto,
-  UpdateMeetupDto,
-  PaginationPipe,
-  MeetupsService,
-} from '.';
+import { PaginationPipe } from './pipes';
+import { MeetupsService } from './meetups.service';
+import { PostMeetupDto, UpdateMeetupDto } from './dto';
 
 @Controller('meetups')
 export class MeetupsController {

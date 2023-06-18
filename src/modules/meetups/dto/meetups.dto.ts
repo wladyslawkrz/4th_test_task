@@ -1,4 +1,4 @@
-import { Meetup } from 'src/entities';
+import { Meetup } from 'src/database/entities';
 
 export class MeetupsDto {
   id: number;
