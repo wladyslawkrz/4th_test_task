@@ -6,14 +6,14 @@ services:
     build:
       context: .
     env_file:
-      - .development.env
+      - .docker.env
     volumes:
       - .:/app
       - /app/node_modules
     ports:
       - 8080:8080
       - 9229:9229
-    command: yarn start:dev
+    command: yarn start:docker
     restart: always
 volumes:
   pgdata:

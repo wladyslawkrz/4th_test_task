@@ -1,14 +1,13 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
+COPY yarn.lock ./
 
 RUN yarn install
 
 COPY . .
-
-COPY ./dist ./dist
 
 EXPOSE 8080/tcp
 
