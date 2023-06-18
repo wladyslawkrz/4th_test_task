@@ -1,5 +1,5 @@
 import { Place } from 'src/database/entities';
 
-export const placesProviders = [
-  { provide: 'PlacesRepository', useValue: Place },
-];
+export const PlacesRepository = Symbol('PlacesRepository');
+
+export const placesProviders = [{ provide: PlacesRepository, useValue: Place }];

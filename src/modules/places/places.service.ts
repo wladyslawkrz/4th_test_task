@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Place } from 'src/database/entities';
 import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
+import { PlacesRepository } from './places.provider';
 
 @Injectable()
 export class PlacesService {
   constructor(
-    @Inject('PlacesRepository') private readonly placesRepository: typeof Place,
+    @Inject(PlacesRepository) private readonly placesRepository: typeof Place,
   ) {}
 
   async getAllPlaces() {

@@ -1,10 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Tag } from 'src/database/entities';
 import { CreateTagDto, TagsDto, UpdateTagDto } from './dto';
+import { TagsRepository } from './tags.provider';
 
 @Injectable()
 export class TagsService {
-  constructor(@Inject('TagsRepository') readonly tagsRepository: typeof Tag) {}
+  constructor(@Inject(TagsRepository) readonly tagsRepository: typeof Tag) {}
 
   async getAll() {
     const tags = await this.tagsRepository.findAll<Tag>();

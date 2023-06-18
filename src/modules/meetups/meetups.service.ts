@@ -1,14 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Meetup, Place } from 'src/database/entities';
 import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from './dto';
+import { MeetupsRepository, PlacesRepository } from './meetups.provider';
 
 @Injectable()
 export class MeetupsService {
   constructor(
-    @Inject('MeetupsRepository')
+    @Inject(MeetupsRepository)
     private readonly meetupsRepository: typeof Meetup,
 
-    @Inject('PlacesRepository')
+    @Inject(PlacesRepository)
     private readonly placesRepository: typeof Place,
   ) {}
 

@@ -1,3 +1,5 @@
 import { Tag } from 'src/database/entities';
 
-export const tagsProviders = [{ provide: 'TagsRepository', useValue: Tag }];
+export const TagsRepository = Symbol('TagsRepository');
+
+export const tagsProviders = [{ provide: TagsRepository, useValue: Tag }];
