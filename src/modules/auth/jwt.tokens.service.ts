@@ -6,6 +6,7 @@ import { Response } from 'express';
 import { Tokens } from 'src/common/types';
 import { User } from 'src/database/entities';
 import { UsersRepository } from './auth.provider';
+import { Role } from 'src/common/enum';
 
 @Injectable()
 export class JwtTokensService {
@@ -15,12 +16,17 @@ export class JwtTokensService {
     @Inject(UsersRepository) private readonly usersRepository: typeof User,
   ) {}
 
-  async getBothTokens(userId: number, email: string): Promise<Tokens> {
+  async getBothTokens(
+    userId: number,
+    email: string,
+    role: Role,
+  ): Promise<Tokens> {
     const [access, refresh] = await Promise.all([
       this.jwt.signAsync(
         {
           sub: userId,
           email,
+          role,
         },
         {
           secret: this.config.get('JWT_SECRET_KEY'),
@@ -31,6 +37,7 @@ export class JwtTokensService {
         {
           sub: userId,
           email,
+          role,
         },
         {
           secret: this.config.get('JWT_REFRESH_KEY'),
@@ -74,9 +81,10 @@ export class JwtTokensService {
   async getTokensAndSendThem(
     userId: number,
     email: string,
+    role: Role,
     response: Response,
   ) {
-    const tokens = await this.getBothTokens(userId, email);
+    const tokens = await this.getBothTokens(userId, email, role);
     await this.updateRefreshTokenHash(userId, tokens.refresh_token);
 
     this.sendAccessTokenWithCookies(response, tokens.access_token);

@@ -9,11 +9,14 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MeetupsService } from './meetups.service';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
-import { PaginationPipe } from 'src/common';
+import { JwtAccessGuard, PaginationPipe, Roles, RolesGuard } from 'src/common';
+import { Role } from 'src/common/enum';
 
+@UseGuards(JwtAccessGuard)
 @Controller('meetups')
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
@@ -32,16 +35,22 @@ export class MeetupsController {
     return this.meetupsService.getMeetupById(params.id);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.organizer)
   @Post('create')
   createMeetup(@Body() dto: PostMeetupDto) {
     return this.meetupsService.postMeetup(dto);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.organizer)
   @Put('update/:id')
   updateMeetupInfo(@Param() params: any, @Body() dto: UpdateMeetupDto) {
     return this.meetupsService.updateMeetupInfo(params.id, dto);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.organizer)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {

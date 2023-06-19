@@ -24,7 +24,12 @@ export class AuthService {
       userRole: Role.regularUser,
     });
 
-    await this.jwt.getTokensAndSendThem(newUser.id, newUser.email, response);
+    await this.jwt.getTokensAndSendThem(
+      newUser.id,
+      newUser.email,
+      newUser.userRole,
+      response,
+    );
   }
 
   async signIn(dto: AuthDto, response: Response) {
@@ -44,7 +49,12 @@ export class AuthService {
     if (!passwordMatches)
       throw new ForbiddenException('The given credentials are incorrect.');
 
-    await this.jwt.getTokensAndSendThem(user.id, user.email, response);
+    await this.jwt.getTokensAndSendThem(
+      user.id,
+      user.email,
+      user.userRole,
+      response,
+    );
   }
 
   async logout(userId: number, response: Response) {
@@ -81,6 +91,11 @@ export class AuthService {
     );
     if (!refreshTokenMatches) throw new ForbiddenException('Access denied');
 
-    await this.jwt.getTokensAndSendThem(user.id, user.email, response);
+    await this.jwt.getTokensAndSendThem(
+      user.id,
+      user.email,
+      user.userRole,
+      response,
+    );
   }
 }
