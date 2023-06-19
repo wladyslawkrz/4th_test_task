@@ -1,7 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Meetup, Place } from 'src/database/entities';
-import { MeetupsDto, PostMeetupDto, UpdateMeetupDto } from './dto';
+import { Meetup, Place, Tag } from 'src/database/entities';
+import { Op, WhereOptions } from 'sequelize';
+import {
+  MeetupsDto,
+  PostMeetupDto,
+  UpdateMeetupDto,
+  QueryParamsDto,
+} from './dto';
 import { MeetupsRepository, PlacesRepository } from './meetups.provider';
+import { SortDirections } from 'src/common/enum';
 
 @Injectable()
 export class MeetupsService {
@@ -13,26 +20,42 @@ export class MeetupsService {
     private readonly placesRepository: typeof Place,
   ) {}
 
-  async getAllMeetups(page: number, limit: number) {
+  async getAllMeetups(page: number, limit: number, dto: QueryParamsDto) {
+    const sortDirection = dto.sort || SortDirections.descending;
+
     const meetups = await this.meetupsRepository.findAndCountAll<Meetup>({
       limit: limit,
       offset: limit * (page - 1),
+      include: [Place, Tag],
+      where: this.getWhereCondition(dto),
+      order: [['meetingTime', sortDirection]],
     });
 
-    const { count, rows } = meetups;
-    rows.map(
+    const { rows } = meetups;
+
+    const data = rows.map(
       (meetup) =>
-        new MeetupsDto(meetup, this.getMeetingPlaceString(meetup.place)),
+        new MeetupsDto(
+          meetup,
+          this.getMeetingPlaceString(meetup.place),
+          this.getTagsString(meetup.tags),
+        ),
     );
 
-    return { count, page, limit, rows };
+    return { page, limit, data };
   }
 
   async getMeetupById(id: number) {
-    const meetup = await this.meetupsRepository.findByPk<Meetup>(id);
+    const meetup = await this.meetupsRepository.findByPk<Meetup>(id, {
+      include: [Place, Tag],
+    });
     if (!meetup) return new NotFoundException('This meetup was not found');
 
-    return new MeetupsDto(meetup, this.getMeetingPlaceString(meetup.place));
+    return new MeetupsDto(
+      meetup,
+      this.getMeetingPlaceString(meetup.place),
+      this.getTagsString(meetup.tags),
+    );
   }
 
   async postMeetup(dto: PostMeetupDto) {
@@ -50,7 +73,14 @@ export class MeetupsService {
       meetup.place = place || null;
     }
 
-    meetup.save();
+    await meetup.save();
+
+    if (dto.tags) {
+      const tags = await Tag.findAll({ where: { id: dto.tags } });
+      await meetup.$add('tags', tags);
+    }
+
+    return meetup;
   }
 
   async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
@@ -79,6 +109,30 @@ export class MeetupsService {
     meetup.destroy();
   }
 
+  private getWhereCondition(dto: QueryParamsDto): WhereOptions<Meetup> {
+    const whereCondition: WhereOptions<Meetup> = {};
+
+    if (dto.meetup)
+      whereCondition.meetupName = { [Op.like]: `%${dto.meetup}%` };
+
+    if (dto.description)
+      whereCondition.meetupDescription = { [Op.like]: `%${dto.description}%` };
+
+    if (dto.timefrom) {
+      whereCondition.meetingTime = { [Op.gte]: dto.timefrom };
+    }
+
+    if (dto.timeto) {
+      if (whereCondition.meetingTime) {
+        whereCondition.meetingTime[Op.lte] = dto.timeto;
+      } else {
+        whereCondition.meetingTime = { [Op.lte]: dto.timeto };
+      }
+    }
+
+    return whereCondition;
+  }
+
   private getMeetingPlaceString(place: Place): string {
     if (!place) {
       return 'Venue not specified';
@@ -91,5 +145,9 @@ export class MeetupsService {
     }
 
     return meetingPlaceString;
+  }
+
+  private getTagsString(tags: Tag[]): string {
+    return tags.map((tag) => tag.tagName).join(', ');
   }
 }

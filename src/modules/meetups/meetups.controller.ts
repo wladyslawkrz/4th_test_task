@@ -10,9 +10,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { PaginationPipe } from './pipes';
 import { MeetupsService } from './meetups.service';
-import { PostMeetupDto, UpdateMeetupDto } from './dto';
+import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
+import { PaginationPipe } from 'src/common';
 
 @Controller('meetups')
 export class MeetupsController {
@@ -22,8 +22,9 @@ export class MeetupsController {
   getAllMeetups(
     @Query('page', new PaginationPipe(1)) page: number,
     @Query('limit', new PaginationPipe(10)) limit: number,
+    @Query() params: QueryParamsDto,
   ) {
-    return this.meetupsService.getAllMeetups(page, limit);
+    return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
   @Get('find/:id')

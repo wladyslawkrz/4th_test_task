@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDateString,
   IsNumber,
   IsOptional,
@@ -22,4 +23,8 @@ export class PostMeetupDto {
   @IsNumber()
   @IsOptional()
   meetingPlaceId: number;
+
+  @IsArray()
+  @IsOptional()
+  tags: number[];
 }
