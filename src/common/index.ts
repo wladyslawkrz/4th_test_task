@@ -3,3 +3,4 @@ export * from './jwt';
 export * from './guard';
 export * from './filters';
 export * from './decorators';
+export * from './pipes';

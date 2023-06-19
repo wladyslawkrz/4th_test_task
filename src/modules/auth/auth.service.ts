@@ -2,7 +2,7 @@ import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
 import { Op } from 'sequelize';
 import { Response } from 'express';
-import { Role } from 'src/database/entities/enum';
+import { Role } from 'src/common/enum';
 import { User } from 'src/database/entities';
 import { JwtTokensService } from './jwt.tokens.service';
 import { UsersRepository } from './auth.provider';

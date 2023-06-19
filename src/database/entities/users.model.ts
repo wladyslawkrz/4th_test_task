@@ -12,7 +12,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 import { Meetup, UserOnMeetup } from '.';
-import { Role } from './enum';
+import { Role } from '../../common/enum';
 
 @Table({ tableName: 'users' })
 export class User extends Model<User> {

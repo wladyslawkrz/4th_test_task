@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { Role } from 'src/database/entities/enum';
+import { Role } from 'src/common/enum';
 
 export class UpdateUserDto {
   @IsOptional()
