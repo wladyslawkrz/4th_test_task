@@ -1,5 +1,4 @@
-import { User } from 'src/database/entities';
-import { Role } from 'src/common/enum';
+import { Role, User } from '@prisma/client';
 
 export class UsersDto {
   id: number;

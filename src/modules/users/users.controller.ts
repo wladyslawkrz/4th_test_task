@@ -10,11 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GetUser, GetUserId } from 'src/common';
-import { User } from 'src/database/entities';
 import { JwtAccessGuard } from 'src/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto';
 import { RegistrateUserDto } from './dto/registrate.user.dto';
+import { User } from '@prisma/client';
 
 @UseGuards(JwtAccessGuard)
 @Controller('users')
