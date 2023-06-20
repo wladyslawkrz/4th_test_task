@@ -16,7 +16,7 @@ model User {
   passwordHashed String
   firstName      String?
   lastName       String?
-  userRole       String
+  userRole       Role
   refreshToken   String?
   meetups        UserOnMeetup[]
 
@@ -92,4 +92,9 @@ model Place {
   updatedAt DateTime @updatedAt
 
   @@map("places")
+}
+
+enum Role {
+  User
+  Organizer
 }
