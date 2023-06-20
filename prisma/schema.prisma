@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  email          String         @unique
+  passwordHashed String
+  firstName      String?
+  lastName       String?
+  userRole       String
+  refreshToken   String?
+  meetups        UserOnMeetup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model UserOnMeetup {
+  userId   Int
+  meetupId Int
+  meetup   Meetup @relation(fields: [meetupId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, meetupId])
+  @@map("usersOnMeetups")
+}
+
+model Meetup {
+  id                Int            @id @default(autoincrement())
+  meetupName        String
+  meetupDescription String?
+  meetingTime       DateTime
+  tags              TagOnMeetup[]
+  users             UserOnMeetup[]
+
+  meetingPlaceId Int?
+  place          Place? @relation(fields: [meetingPlaceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("meetups")
+}
+
+model TagOnMeetup {
+  tagId    Int
+  meetupId Int
+  meetup   Meetup @relation(fields: [meetupId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([tagId, meetupId])
+  @@map("tagsOnMeetups")
+}
+
+model Tag {
+  id          Int           @id @default(autoincrement())
+  tagName     String        @unique
+  TagOnMeetup TagOnMeetup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model Place {
+  id       Int      @id @default(autoincrement())
+  city     String
+  street   String
+  building String
+  room     Int?
+  meetups  Meetup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("places")
+}
