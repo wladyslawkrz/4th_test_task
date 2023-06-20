@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDateString,
   IsNumber,
   IsOptional,
@@ -15,7 +16,7 @@ export class UpdateMeetupDto {
   @IsString()
   @Length(0, 200)
   @IsOptional()
-  meetupDescription?: string;
+  meetupDescription: string;
 
   @IsDateString()
   @IsOptional()
@@ -24,4 +25,8 @@ export class UpdateMeetupDto {
   @IsNumber()
   @IsOptional()
   meetingPlaceId: number;
+
+  @IsArray()
+  @IsOptional()
+  tags: number[];
 }

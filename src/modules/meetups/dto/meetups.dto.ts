@@ -1,4 +1,4 @@
-import { Meetup } from 'src/database/entities';
+import { Meetup } from '@prisma/client';
 
 export class MeetupsDto {
   id: number;

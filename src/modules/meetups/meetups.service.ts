@@ -1,132 +1,85 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Meetup, Place, Tag } from 'src/database/entities';
-import { Op, WhereOptions } from 'sequelize';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   MeetupsDto,
   PostMeetupDto,
   UpdateMeetupDto,
   QueryParamsDto,
 } from './dto';
-import { MeetupsRepository, PlacesRepository } from './meetups.provider';
 import { SortDirections } from 'src/common/enum';
+import { MeetupsRepository } from './repository/meetups.repository';
+import { Meetup, Place, Prisma, Tag } from '@prisma/client';
 
 @Injectable()
 export class MeetupsService {
-  constructor(
-    @Inject(MeetupsRepository)
-    private readonly meetupsRepository: typeof Meetup,
-
-    @Inject(PlacesRepository)
-    private readonly placesRepository: typeof Place,
-  ) {}
+  constructor(private meetupsRepository: MeetupsRepository) {}
 
   async getAllMeetups(page: number, limit: number, dto: QueryParamsDto) {
     const sortDirection = dto.sort || SortDirections.descending;
 
-    const meetups = await this.meetupsRepository.findAndCountAll<Meetup>({
-      limit: limit,
-      offset: limit * (page - 1),
-      include: [Place, Tag],
-      where: this.getWhereCondition(dto),
-      order: [['meetingTime', sortDirection]],
-    });
-
-    const { rows } = meetups;
-
-    const data = rows.map(
-      (meetup) =>
-        new MeetupsDto(
-          meetup,
-          this.getMeetingPlaceString(meetup.place),
-          this.getTagsString(meetup.tags),
-        ),
+    const meetups = await this.meetupsRepository.getAllMeetups(
+      page,
+      limit,
+      this.getWhereCondition(dto),
+      sortDirection,
     );
 
-    return { page, limit, data };
+    // const data = meetups.map(
+    //   (meetup: Meetup) =>
+    //     new MeetupsDto(
+    //       meetup,
+    //       this.getMeetingPlaceString(meetup),
+    //       this.getTagsString(meetup.tags),
+    //     ),
+    // );
+
+    return { page, limit, meetups };
   }
 
   async getMeetupById(id: number) {
-    const meetup = await this.meetupsRepository.findByPk<Meetup>(id, {
-      include: [Place, Tag],
-    });
+    const meetup = await this.meetupsRepository.getMeetupById(Number(id));
     if (!meetup) return new NotFoundException('This meetup was not found');
 
-    return new MeetupsDto(
-      meetup,
-      this.getMeetingPlaceString(meetup.place),
-      this.getTagsString(meetup.tags),
-    );
-  }
-
-  async postMeetup(dto: PostMeetupDto) {
-    const meetup = new Meetup();
-
-    meetup.meetupName = dto.meetupName;
-    meetup.meetupDescription = dto.meetupName || null;
-    meetup.meetingTime = dto.meetingTime;
-    meetup.meetingPlaceId = dto.meetingPlaceId || null;
-
-    if (dto.meetingPlaceId) {
-      const place = await this.placesRepository.findOne({
-        where: { id: dto.meetingPlaceId },
-      });
-      meetup.place = place || null;
-    }
-
-    await meetup.save();
-
-    if (dto.tags) {
-      const tags = await Tag.findAll({ where: { id: dto.tags } });
-      await meetup.$add('tags', tags);
-    }
+    // return new MeetupsDto(
+    //   meetup,
+    //   this.getMeetingPlaceString(meetup.place),
+    //   this.getTagsString(meetup.tags),
+    // );
 
     return meetup;
   }
 
+  async postMeetup(dto: PostMeetupDto) {
+    await this.meetupsRepository.createMeetup(dto);
+  }
+
   async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
-    const meetup = await this.meetupsRepository.findByPk(meetupId);
-    if (!meetup) return new NotFoundException('This meetup was not found');
-
-    meetup.meetupName = dto.meetupName || meetup.meetupName;
-    meetup.meetupDescription = dto.meetupName || meetup.meetupDescription;
-    meetup.meetingTime = dto.meetingTime || meetup.meetingTime;
-    meetup.meetingPlaceId = dto.meetingPlaceId || meetup.meetingPlaceId;
-
-    if (dto.meetingPlaceId) {
-      const place = await this.placesRepository.findOne({
-        where: { id: dto.meetingPlaceId },
-      });
-      meetup.place = place;
-    }
-
-    meetup.save();
+    await this.meetupsRepository.updateMeetup(Number(meetupId), dto);
   }
 
   async deleteMeetup(meetupId: number) {
-    const meetup = await this.meetupsRepository.findByPk(meetupId);
+    const meetup = await this.meetupsRepository.getMeetupById(meetupId);
     if (!meetup) return new NotFoundException('This meetup was not found');
 
-    meetup.destroy();
+    await this.meetupsRepository.deleteMeetup(meetupId);
   }
 
-  private getWhereCondition(dto: QueryParamsDto): WhereOptions<Meetup> {
-    const whereCondition: WhereOptions<Meetup> = {};
+  private getWhereCondition(dto: QueryParamsDto): Prisma.MeetupWhereInput {
+    const whereCondition: Prisma.MeetupWhereInput = {};
 
-    if (dto.meetup)
-      whereCondition.meetupName = { [Op.like]: `%${dto.meetup}%` };
+    if (dto.meetup) whereCondition.meetupName = { contains: dto.meetup };
 
     if (dto.description)
-      whereCondition.meetupDescription = { [Op.like]: `%${dto.description}%` };
+      whereCondition.meetupDescription = { contains: dto.description };
 
     if (dto.timefrom) {
-      whereCondition.meetingTime = { [Op.gte]: dto.timefrom };
+      whereCondition.meetingTime = { gte: dto.timefrom };
     }
 
     if (dto.timeto) {
       if (whereCondition.meetingTime) {
-        whereCondition.meetingTime[Op.lte] = dto.timeto;
+        whereCondition.meetingTime['lte'] = dto.timeto;
       } else {
-        whereCondition.meetingTime = { [Op.lte]: dto.timeto };
+        whereCondition.meetingTime = { lte: dto.timeto };
       }
     }
 

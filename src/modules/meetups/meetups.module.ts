@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { meetupsProviders } from './meetups.provider';
 import { MeetupsService } from './meetups.service';
 import { MeetupsController } from './meetups.controller';
+import { MeetupsRepository } from './repository/meetups.repository';
 
 @Module({
-  providers: [MeetupsService, ...meetupsProviders],
+  providers: [MeetupsService, MeetupsRepository],
   controllers: [MeetupsController],
 })
 export class MeetupsModule {}

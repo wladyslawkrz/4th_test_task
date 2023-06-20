@@ -14,7 +14,7 @@ import {
 import { MeetupsService } from './meetups.service';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
 import { JwtAccessGuard, PaginationPipe, Roles, RolesGuard } from 'src/common';
-import { Role } from 'src/common/enum';
+import { Role } from '@prisma/client';
 
 @UseGuards(JwtAccessGuard)
 @Controller('meetups')
@@ -36,21 +36,21 @@ export class MeetupsController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(Role.organizer)
+  @Roles(Role.Organizer)
   @Post('create')
   createMeetup(@Body() dto: PostMeetupDto) {
     return this.meetupsService.postMeetup(dto);
   }
 
   @UseGuards(RolesGuard)
-  @Roles(Role.organizer)
+  @Roles(Role.Organizer)
   @Put('update/:id')
   updateMeetupInfo(@Param() params: any, @Body() dto: UpdateMeetupDto) {
     return this.meetupsService.updateMeetupInfo(params.id, dto);
   }
 
   @UseGuards(RolesGuard)
-  @Roles(Role.organizer)
+  @Roles(Role.Organizer)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
