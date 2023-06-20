@@ -7,7 +7,7 @@ import {
   TagsModule,
   UsersModule,
 } from './modules';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     TagsModule,
     PlacesModule,
-    DatabaseModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
