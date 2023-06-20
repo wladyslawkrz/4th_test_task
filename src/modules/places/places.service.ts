@@ -1,54 +1,40 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Place } from 'src/database/entities';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
-import { PlacesRepository } from './places.provider';
+import { Place } from '@prisma/client';
+import { PlacesRepository } from './repository/places.repository';
 
 @Injectable()
 export class PlacesService {
-  constructor(
-    @Inject(PlacesRepository) private readonly placesRepository: typeof Place,
-  ) {}
+  constructor(private placesRepository: PlacesRepository) {}
 
   async getAllPlaces() {
-    const places = await this.placesRepository.findAll<Place>();
+    const places = await this.placesRepository.getAllPlaces();
 
-    return places.map((place) => new PlacesDto(place));
+    return places.map((place: Place) => new PlacesDto(place));
   }
 
   async getPlace(id: number) {
-    const place = await this.placesRepository.findByPk(id);
-    if (!place) return new NotFoundException();
+    const place = await this.placesRepository.getOnePlace(Number(id));
+    if (!place) throw new NotFoundException('Place not found');
 
     return new PlacesDto(place);
   }
 
   async addPlace(dto: CreatePlaceDto) {
-    const place = new Place();
-
-    place.city = dto.city;
-    place.street = dto.street;
-    place.building = dto.building;
-    place.room = dto.room || null;
-
-    await place.save();
+    await this.placesRepository.createPlace(dto);
   }
 
   async updatePlace(dto: UpdatePlaceDto, id: number) {
-    const place = await this.placesRepository.findByPk(id);
+    if (!(await this.placesRepository.getOnePlace(Number(id))))
+      throw new NotFoundException('Place not found');
 
-    place.city = dto.city || place.city;
-    place.street = dto.street || place.city;
-    place.building = dto.building || place.city;
-    place.room = dto.room || place.room;
-
-    place.save();
-
-    return place;
+    await this.placesRepository.updatePlace(Number(id), dto);
   }
 
   async deletePlace(id: number) {
-    const place = await this.placesRepository.findByPk(id);
+    if (!(await this.placesRepository.getOnePlace(Number(id))))
+      throw new NotFoundException('Place not found');
 
-    place.destroy();
+    await this.placesRepository.deletePlace(Number(id));
   }
 }

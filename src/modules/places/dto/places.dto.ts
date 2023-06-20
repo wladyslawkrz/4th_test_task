@@ -1,4 +1,4 @@
-import { Place } from 'src/database/entities';
+import { Place } from '@prisma/client';
 
 export class PlacesDto {
   city: string;
