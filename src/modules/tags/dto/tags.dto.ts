@@ -1,4 +1,4 @@
-import { Tag } from 'src/database/entities';
+import { Tag } from '@prisma/client';
 
 export class TagsDto {
   tagName: string;

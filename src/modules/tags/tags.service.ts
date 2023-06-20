@@ -1,46 +1,36 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Tag } from 'src/database/entities';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTagDto, TagsDto, UpdateTagDto } from './dto';
-import { TagsRepository } from './tags.provider';
+import { TagsRepository } from './repository';
 
 @Injectable()
 export class TagsService {
-  constructor(@Inject(TagsRepository) readonly tagsRepository: typeof Tag) {}
+  constructor(private tagsRepository: TagsRepository) {}
 
   async getAll() {
-    const tags = await this.tagsRepository.findAll<Tag>();
+    const tags = await this.tagsRepository.getAllTags();
 
     return tags.map((tag) => new TagsDto(tag));
   }
 
   async getTag(id: number) {
-    const tag = await this.tagsRepository.findByPk(id);
-    if (!tag) return new NotFoundException();
+    const tag = await this.tagsRepository.getOneTag(Number(id));
+    if (!tag) return new NotFoundException('This tag was not found');
 
     return new TagsDto(tag);
   }
 
   async createTag(dto: CreateTagDto) {
-    const tag = new Tag();
-
-    tag.tagName = dto.tagName;
-
-    await tag.save();
+    await this.tagsRepository.createTag(dto.tagName);
   }
 
   async updateTag(dto: UpdateTagDto, id: number) {
-    const tag = await this.tagsRepository.findByPk(id);
+    const tag = await this.tagsRepository.getOneTag(Number(id));
     if (!tag) return new NotFoundException('This tag was not found');
 
-    tag.tagName = dto.tagName || tag.tagName;
-    tag.save();
-
-    return tag;
+    await this.tagsRepository.updateTag(dto.tagName, Number(id));
   }
 
   async deleteTag(id: number) {
-    const tag = await this.tagsRepository.findByPk(id);
-
-    tag.destroy();
+    await this.tagsRepository.deleteTag(Number(id));
   }
 }
