@@ -14,25 +14,31 @@ import {
   JwtRefreshGuard,
   GetUser,
   GetUserId,
-  UniqueConstraintExceptionFilter,
+  PrismaUniqueConstraintFilter,
 } from 'src/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { AuthSignUpDto, AuthSignInDto } from './dto';
 
-@UseFilters(UniqueConstraintExceptionFilter)
+@UseFilters(PrismaUniqueConstraintFilter)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
-  signUp(@Body() dto: AuthDto, @Res({ passthrough: true }) response: Response) {
+  signUp(
+    @Body() dto: AuthSignUpDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     return this.authService.signUp(dto, response);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signIn(@Body() dto: AuthDto, @Res({ passthrough: true }) response: Response) {
+  signIn(
+    @Body() dto: AuthSignInDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     return this.authService.signIn(dto, response);
   }
 

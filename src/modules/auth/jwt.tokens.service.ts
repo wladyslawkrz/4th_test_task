@@ -1,19 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import * as argon from 'argon2';
 import { Response } from 'express';
 import { Tokens } from 'src/common/types';
-import { User } from 'src/database/entities';
-import { UsersRepository } from './auth.provider';
-import { Role } from 'src/common/enum';
+import { AuthRepository } from './repository';
 
 @Injectable()
 export class JwtTokensService {
   constructor(
     private jwt: JwtService,
     private config: ConfigService,
-    @Inject(UsersRepository) private readonly usersRepository: typeof User,
+    private authRepository: AuthRepository,
   ) {}
 
   async getBothTokens(
@@ -54,14 +53,7 @@ export class JwtTokensService {
 
   async updateRefreshTokenHash(userId: number, refreshToken: string) {
     const hash = await argon.hash(refreshToken);
-    await this.usersRepository.update(
-      {
-        refreshToken: hash,
-      },
-      {
-        where: { id: userId },
-      },
-    );
+    await this.authRepository.updateRefreshToken(userId, hash);
   }
 
   sendAccessTokenWithCookies(response: Response, access_token: string) {
