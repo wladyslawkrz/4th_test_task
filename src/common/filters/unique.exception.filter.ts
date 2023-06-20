@@ -1,25 +1,28 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
-import { UniqueConstraintError } from 'sequelize';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
+import { Prisma } from '@prisma/client';
+import { Response } from 'express';
 
-@Catch(UniqueConstraintError)
-export class UniqueConstraintExceptionFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+@Catch(Prisma.PrismaClientKnownRequestError)
+export class PrismaUniqueConstraintFilter extends BaseExceptionFilter {
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    console.error(exception.message);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const status = HttpStatus.CONFLICT;
+    const message = `Given credentials aren't unique`;
 
-    response.status(status).json({
-      statusCode: status,
-      message: 'Email is already in use.',
-      path: request.url,
-    });
+    switch (exception.code) {
+      case 'P2002': {
+        const status = HttpStatus.CONFLICT;
+        response.status(status).json({
+          statusCode: status,
+          message: message,
+        });
+        break;
+      }
+      default:
+        super.catch(exception, host);
+        break;
+    }
   }
 }
