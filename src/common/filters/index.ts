@@ -1,1 +1,1 @@
-export * from './unique.exception.filter';
+export * from './prisma.exception.filter';

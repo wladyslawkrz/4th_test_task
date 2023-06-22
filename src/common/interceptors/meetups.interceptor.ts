@@ -27,6 +27,7 @@ export class MeetupsInterceptor implements NestInterceptor {
             return new MeetupsDto(meetup, place, tags);
           },
         );
+
         const page = response.page;
         const limit = response.limit;
 
