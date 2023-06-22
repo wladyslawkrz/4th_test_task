@@ -10,17 +10,29 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MeetupsService } from './meetups.service';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
-import { JwtAccessGuard, PaginationPipe, Roles, RolesGuard } from 'src/common';
+import {
+  GetUserId,
+  JwtAccessGuard,
+  PaginationPipe,
+  Roles,
+  RolesGuard,
+} from 'src/common';
 import { Role } from '@prisma/client';
+import {
+  CertainMeetupInterceptor,
+  MeetupsInterceptor,
+} from 'src/common/interceptors';
 
 @UseGuards(JwtAccessGuard)
 @Controller('meetups')
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
+  @UseInterceptors(MeetupsInterceptor)
   @Get()
   getAllMeetups(
     @Query('page', new PaginationPipe(1)) page: number,
@@ -30,6 +42,7 @@ export class MeetupsController {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
+  @UseInterceptors(CertainMeetupInterceptor)
   @Get('find/:id')
   getMeetupById(@Param() params: any) {
     return this.meetupsService.getMeetupById(params.id);
@@ -38,8 +51,8 @@ export class MeetupsController {
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
-  createMeetup(@Body() dto: PostMeetupDto) {
-    return this.meetupsService.postMeetup(dto);
+  createMeetup(@GetUserId() userId: number, @Body() dto: PostMeetupDto) {
+    return this.meetupsService.postMeetup(userId, dto);
   }
 
   @UseGuards(RolesGuard)
@@ -54,6 +67,6 @@ export class MeetupsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
-    return this.meetupsService.deleteMeetup(params.id);
+    return this.meetupsService.deleteMeetup(Number(params.id));
   }
 }

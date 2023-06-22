@@ -1,13 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  MeetupsDto,
-  PostMeetupDto,
-  UpdateMeetupDto,
-  QueryParamsDto,
-} from './dto';
+import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
 import { SortDirections } from 'src/common/enum';
 import { MeetupsRepository } from './repository/meetups.repository';
-import { Meetup, Place, Prisma, Tag } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MeetupsService {
@@ -23,15 +18,6 @@ export class MeetupsService {
       sortDirection,
     );
 
-    // const data = meetups.map(
-    //   (meetup: Meetup) =>
-    //     new MeetupsDto(
-    //       meetup,
-    //       this.getMeetingPlaceString(meetup),
-    //       this.getTagsString(meetup.tags),
-    //     ),
-    // );
-
     return { page, limit, meetups };
   }
 
@@ -39,17 +25,11 @@ export class MeetupsService {
     const meetup = await this.meetupsRepository.getMeetupById(Number(id));
     if (!meetup) return new NotFoundException('This meetup was not found');
 
-    // return new MeetupsDto(
-    //   meetup,
-    //   this.getMeetingPlaceString(meetup.place),
-    //   this.getTagsString(meetup.tags),
-    // );
-
     return meetup;
   }
 
-  async postMeetup(dto: PostMeetupDto) {
-    await this.meetupsRepository.createMeetup(dto);
+  async postMeetup(userId: number, dto: PostMeetupDto) {
+    await this.meetupsRepository.createMeetup(userId, dto);
   }
 
   async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
@@ -84,23 +64,5 @@ export class MeetupsService {
     }
 
     return whereCondition;
-  }
-
-  private getMeetingPlaceString(place: Place): string {
-    if (!place) {
-      return 'Venue not specified';
-    }
-
-    const { city, street, building, room } = place;
-    let meetingPlaceString = city + ', ' + street + ', ' + building;
-    if (room) {
-      meetingPlaceString += ', Room ' + room;
-    }
-
-    return meetingPlaceString;
-  }
-
-  private getTagsString(tags: Tag[]): string {
-    return tags.map((tag) => tag.tagName).join(', ');
   }
 }

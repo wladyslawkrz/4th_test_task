@@ -1,9 +1,10 @@
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { IMeetupsRepository } from './meetups.repository.interface';
-import { Prisma, Meetup } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { SortDirections } from 'src/common/enum';
 import { PostMeetupDto, UpdateMeetupDto } from '../dto';
 import { Injectable } from '@nestjs/common';
+import { MeetupWithPlaceAndTags } from 'src/common';
 
 @Injectable()
 export class MeetupsRepository implements IMeetupsRepository {
@@ -14,39 +15,53 @@ export class MeetupsRepository implements IMeetupsRepository {
     limit: number,
     condition: Prisma.MeetupWhereInput,
     sortDirection: SortDirections,
-  ): Promise<Meetup[]> {
-    const meetups = await this.prisma.meetup.findMany({
-      take: limit,
-      skip: (page - 1) * limit,
-      include: {
-        tags: true,
+  ): Promise<MeetupWithPlaceAndTags[]> {
+    const meetups: MeetupWithPlaceAndTags[] = await this.prisma.meetup.findMany(
+      {
+        take: limit,
+        skip: (page - 1) * limit,
+        include: {
+          tags: {
+            include: { tag: true },
+          },
+          place: true,
+        },
+        where: condition,
+        orderBy: {
+          meetingTime: sortDirection,
+        },
       },
-      where: condition,
-      orderBy: {
-        meetingTime: sortDirection,
-      },
-    });
+    );
 
     return meetups;
   }
 
-  async getMeetupById(meetupId: number): Promise<Meetup> {
+  async getMeetupById(meetupId: number): Promise<MeetupWithPlaceAndTags> {
     const meetup = await this.prisma.meetup.findUnique({
       where: {
         id: meetupId,
+      },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        place: true,
       },
     });
 
     return meetup;
   }
 
-  async createMeetup(dto: PostMeetupDto): Promise<void> {
+  async createMeetup(userId: number, dto: PostMeetupDto): Promise<void> {
     const meetup = await this.prisma.meetup.create({
       data: {
         meetupName: dto.meetupName,
         meetupDescription: dto.meetupDescription,
         meetingTime: new Date(dto.meetingTime),
         ...(dto.meetingPlaceId && { meetingPlaceId: dto.meetingPlaceId }),
+        meetupCreatorId: userId,
       },
     });
 
