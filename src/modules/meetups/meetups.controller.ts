@@ -26,7 +26,10 @@ import {
   CertainMeetupInterceptor,
   MeetupsInterceptor,
 } from 'src/common/interceptors';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('Meetup actions')
 @UseGuards(JwtAccessGuard)
 @Controller('meetups')
 export class MeetupsController {

@@ -12,7 +12,9 @@ import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Places')
 @UseGuards(JwtAccessGuard)
 @Controller('places')
 export class PlacesController {

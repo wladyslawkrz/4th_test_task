@@ -12,7 +12,9 @@ import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Tags')
 @UseGuards(JwtAccessGuard)
 @Controller('tags')
 export class TagsController {

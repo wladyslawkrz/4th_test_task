@@ -14,12 +14,14 @@ import {
   JwtRefreshGuard,
   GetUser,
   GetUserId,
-  PrismaUniqueConstraintFilter,
+  PrismaExceptionFilter,
 } from 'src/common';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto, AuthSignInDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseFilters(PrismaUniqueConstraintFilter)
+@ApiTags('Authorization')
+@UseFilters(PrismaExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
