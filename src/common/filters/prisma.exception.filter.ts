@@ -4,16 +4,25 @@ import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaUniqueConstraintFilter extends BaseExceptionFilter {
+export class PrismaExceptionFilter extends BaseExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     console.error(exception.message);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const message = `Given credentials aren't unique`;
 
     switch (exception.code) {
       case 'P2002': {
+        const message = `Please, check the entered data for uniqueness.`;
         const status = HttpStatus.CONFLICT;
+        response.status(status).json({
+          statusCode: status,
+          message: message,
+        });
+        break;
+      }
+      case 'P2003': {
+        const message = `Check the correctness of the input.`;
+        const status = HttpStatus.BAD_REQUEST;
         response.status(status).json({
           statusCode: status,
           message: message,
