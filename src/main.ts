@@ -20,6 +20,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .addBearerAuth()
+    .addTag('Authorization')
     .setTitle('Meetup REST API')
     .setDescription('Modsen 4th task related with NestJS back-end framework')
     .setVersion('1.0')
