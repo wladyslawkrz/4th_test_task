@@ -35,6 +35,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
   @Get()
   getAllMeetups(
@@ -45,12 +46,14 @@ export class MeetupsController {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(CertainMeetupInterceptor)
   @Get('find/:id')
   getMeetupById(@Param() params: any) {
     return this.meetupsService.getMeetupById(params.id);
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
@@ -58,6 +61,7 @@ export class MeetupsController {
     return this.meetupsService.postMeetup(userId, dto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
@@ -65,9 +69,9 @@ export class MeetupsController {
     return this.meetupsService.updateMeetupInfo(params.id, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
     return this.meetupsService.deleteMeetup(Number(params.id));

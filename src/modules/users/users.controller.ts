@@ -36,7 +36,7 @@ export class UsersController {
     return user;
   }
 
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @Put('current')
   updateCurrentUser(@GetUser() user: User, @Body() dto: UpdateUserDto) {
     return this.usersService.updateMe(user.id, dto);
