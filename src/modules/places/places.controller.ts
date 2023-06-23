@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -12,24 +14,28 @@ import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Places')
 @UseGuards(JwtAccessGuard)
 @Controller('places')
 export class PlacesController {
   constructor(private placesService: PlacesService) {}
 
+  @HttpCode(HttpStatus.OK)
   @Get()
   getAllPlaces() {
     return this.placesService.getAllPlaces();
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   getPlace(@Param() params: any) {
     return this.placesService.getPlace(params.id);
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
@@ -37,6 +43,7 @@ export class PlacesController {
     return this.placesService.addPlace(dto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
@@ -44,6 +51,7 @@ export class PlacesController {
     return this.placesService.updatePlace(dto, params.id);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')

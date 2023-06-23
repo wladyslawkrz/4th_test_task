@@ -14,8 +14,9 @@ import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Tags')
 @UseGuards(JwtAccessGuard)
 @Controller('tags')
