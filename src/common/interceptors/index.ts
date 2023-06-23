@@ -1,2 +1,4 @@
 export * from './meetups.interceptor';
-export * from './certain.meetup.interceptor';
+export * from './place.interceptor';
+export * from './tags.interceptor';
+export * from './users.interceptor';
