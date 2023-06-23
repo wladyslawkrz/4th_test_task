@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateUserDto, UsersDto } from './dto';
+import { UpdateUserDto } from './dto';
 import { RegistrateUserDto } from './dto/registrate.user.dto';
 import { UsersRepository } from './repository/users.repository';
 
@@ -7,12 +7,18 @@ import { UsersRepository } from './repository/users.repository';
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
-  async getAll() {
-    const users = await this.usersRepository.getAllUsers();
-    return users.map((user) => new UsersDto(user));
+  async getCurrentUser(userId: number) {
+    const user = await this.usersRepository.getCurrentUser(userId);
+
+    return user;
   }
 
-  async updateMe(myId: number, dto: UpdateUserDto) {
+  async getAll() {
+    const users = await this.usersRepository.getAllUsers();
+    return users;
+  }
+
+  async updateCurrentUser(myId: number, dto: UpdateUserDto) {
     await this.usersRepository.updateUserInfo(myId, dto);
   }
 
@@ -20,7 +26,7 @@ export class UsersService {
     await this.usersRepository.registrateUserOnMeetup(userId, dto.meetupId);
   }
 
-  async deleteMe(myId: number) {
+  async deleteCurrentUser(myId: number) {
     await this.usersRepository.deleteUser(myId);
   }
 }

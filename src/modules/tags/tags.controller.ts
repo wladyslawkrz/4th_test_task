@@ -9,12 +9,14 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { TagsInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
 @ApiTags('Tags')
@@ -23,12 +25,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class TagsController {
   constructor(private tagsService: TagsService) {}
 
+  @UseInterceptors(TagsInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllTags() {
     return this.tagsService.getAll();
   }
 
+  @UseInterceptors(TagsInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getTag(@Param() params: any) {

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
-import { Place } from '@prisma/client';
+import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { PlacesRepository } from './repository/places.repository';
 
 @Injectable()
@@ -10,14 +9,14 @@ export class PlacesService {
   async getAllPlaces() {
     const places = await this.placesRepository.getAllPlaces();
 
-    return places.map((place: Place) => new PlacesDto(place));
+    return places;
   }
 
   async getPlace(id: number) {
     const place = await this.placesRepository.getOnePlace(Number(id));
     if (!place) throw new NotFoundException('Place not found');
 
-    return new PlacesDto(place);
+    return place;
   }
 
   async addPlace(dto: CreatePlaceDto) {

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTagDto, TagsDto, UpdateTagDto } from './dto';
+import { CreateTagDto, UpdateTagDto } from './dto';
 import { TagsRepository } from './repository';
 
 @Injectable()
@@ -9,14 +9,14 @@ export class TagsService {
   async getAll() {
     const tags = await this.tagsRepository.getAllTags();
 
-    return tags.map((tag) => new TagsDto(tag));
+    return tags;
   }
 
   async getTag(id: number) {
     const tag = await this.tagsRepository.getOneTag(Number(id));
-    if (!tag) return new NotFoundException('This tag was not found');
+    if (!tag) throw new NotFoundException('This tag was not found');
 
-    return new TagsDto(tag);
+    return tag;
   }
 
   async createTag(dto: CreateTagDto) {
@@ -25,7 +25,7 @@ export class TagsService {
 
   async updateTag(dto: UpdateTagDto, id: number) {
     const tag = await this.tagsRepository.getOneTag(Number(id));
-    if (!tag) return new NotFoundException('This tag was not found');
+    if (!tag) throw new NotFoundException('This tag was not found');
 
     await this.tagsRepository.updateTag(dto.tagName, Number(id));
   }

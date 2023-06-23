@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser, GetUserId } from 'src/common';
 import { JwtAccessGuard } from 'src/common';
@@ -16,6 +17,7 @@ import { UpdateUserDto } from './dto';
 import { RegistrateUserDto } from './dto/registrate.user.dto';
 import { User } from '@prisma/client';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UsersInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -24,22 +26,24 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllUsers() {
     return this.usersService.getAll();
   }
 
+  @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get('current')
-  getCurrentUser(@GetUser() user: User) {
-    return user;
+  getCurrentUser(@GetUserId() userId: number) {
+    return this.usersService.getCurrentUser(userId);
   }
 
   @HttpCode(HttpStatus.OK)
   @Put('current')
   updateCurrentUser(@GetUser() user: User, @Body() dto: UpdateUserDto) {
-    return this.usersService.updateMe(user.id, dto);
+    return this.usersService.updateCurrentUser(user.id, dto);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -54,6 +58,6 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('current')
   deleteCurrentUser(@GetUser() user: User) {
-    return this.usersService.deleteMe(user.id);
+    return this.usersService.deleteCurrentUser(user.id);
   }
 }

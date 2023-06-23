@@ -8,6 +8,16 @@ import { UpdateUserDto } from '../dto';
 export class UsersRepository implements IUsersRepository {
   constructor(private prisma: PrismaService) {}
 
+  async getCurrentUser(userId: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    return user;
+  }
+
   async getAllUsers(): Promise<User[]> {
     const users = await this.prisma.user.findMany();
 

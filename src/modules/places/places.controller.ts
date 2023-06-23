@@ -9,12 +9,14 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PlacesInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
 @ApiTags('Places')
@@ -23,12 +25,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class PlacesController {
   constructor(private placesService: PlacesService) {}
 
+  @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllPlaces() {
     return this.placesService.getAllPlaces();
   }
 
+  @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getPlace(@Param() params: any) {

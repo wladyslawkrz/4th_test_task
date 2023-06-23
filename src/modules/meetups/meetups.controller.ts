@@ -22,10 +22,7 @@ import {
   RolesGuard,
 } from 'src/common';
 import { Role } from '@prisma/client';
-import {
-  CertainMeetupInterceptor,
-  MeetupsInterceptor,
-} from 'src/common/interceptors';
+import { MeetupsInterceptor } from 'src/common/interceptors';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
@@ -47,8 +44,8 @@ export class MeetupsController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(CertainMeetupInterceptor)
-  @Get('find/:id')
+  @UseInterceptors(MeetupsInterceptor)
+  @Get(':id')
   getMeetupById(@Param() params: any) {
     return this.meetupsService.getMeetupById(params.id);
   }
