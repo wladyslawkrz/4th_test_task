@@ -8,12 +8,14 @@ import {
   UsersModule,
 } from './modules';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { appConfigValidationSchema } from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `env/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
+      validationSchema: appConfigValidationSchema,
     }),
     UsersModule,
     MeetupsModule,
