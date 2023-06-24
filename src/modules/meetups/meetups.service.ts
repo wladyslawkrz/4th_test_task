@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
 import { SortDirections } from 'src/common/enum';
 import { MeetupsRepository } from './repository/meetups.repository';
@@ -6,6 +6,8 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MeetupsService {
+  private logger = new Logger('MeetupsService');
+
   constructor(private meetupsRepository: MeetupsRepository) {}
 
   async getAllMeetups(page: number, limit: number, dto: QueryParamsDto) {
@@ -18,6 +20,10 @@ export class MeetupsService {
       sortDirection,
     );
 
+    this.logger.verbose(
+      `Request for a list of meetups. User got ${meetups.length} rows.`,
+    );
+
     return { page, limit, meetups };
   }
 
@@ -25,15 +31,23 @@ export class MeetupsService {
     const meetup = await this.meetupsRepository.getMeetupById(Number(id));
     if (!meetup) return new NotFoundException('This meetup was not found');
 
+    this.logger.verbose(`Request for meetup [id ${meetup.id}]`);
+
     return meetup;
   }
 
   async postMeetup(userId: number, dto: PostMeetupDto) {
     await this.meetupsRepository.createMeetup(userId, dto);
+
+    this.logger.verbose(
+      `User [id ${userId}] created meetup '${dto.meetupName}'`,
+    );
   }
 
   async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
     await this.meetupsRepository.updateMeetup(Number(meetupId), dto);
+
+    this.logger.verbose(`Meetup [id ${meetupId}] was updated.`);
   }
 
   async deleteMeetup(meetupId: number) {
@@ -41,6 +55,8 @@ export class MeetupsService {
     if (!meetup) return new NotFoundException('This meetup was not found');
 
     await this.meetupsRepository.deleteMeetup(meetupId);
+
+    this.logger.verbose(`Meetup [id ${meetupId}] was deleted.`);
   }
 
   private getWhereCondition(dto: QueryParamsDto): Prisma.MeetupWhereInput {

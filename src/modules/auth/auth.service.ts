@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import * as argon from 'argon2';
 import { Response } from 'express';
 import { JwtTokensService } from './jwt.tokens.service';
@@ -8,6 +8,8 @@ import { AuthSignUpDto } from './dto/auth.signup.dto';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
+
   constructor(
     private jwt: JwtTokensService,
     private authRepository: AuthRepository,
@@ -24,6 +26,7 @@ export class AuthService {
       newUser.userRole,
       response,
     );
+    this.logger.verbose(`New user registered: ${dto.email}`);
   }
 
   async signIn(dto: AuthSignInDto, response: Response) {
@@ -46,6 +49,8 @@ export class AuthService {
       user.userRole,
       response,
     );
+
+    this.logger.verbose(`User logged in: ${dto.email}`);
   }
 
   async logout(userId: number, response: Response) {
@@ -53,6 +58,10 @@ export class AuthService {
 
     response.clearCookie('access_token');
     response.clearCookie('refresh_token');
+
+    this.logger.verbose(
+      `User logged out: id ${userId}, access and refresh tokens destroyed.`,
+    );
   }
 
   async refreshTokens(
@@ -77,6 +86,10 @@ export class AuthService {
       user.email,
       user.userRole,
       response,
+    );
+
+    this.logger.verbose(
+      `User: id ${userId} refreshed his access token using refresh token.`,
     );
   }
 }
