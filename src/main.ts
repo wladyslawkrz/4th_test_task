@@ -7,7 +7,7 @@ import { PrismaExceptionFilter } from './common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
+  const logger = new Logger('App-Main');
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -35,7 +35,25 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  await app.listen(PORT);
-  logger.log(`Application listening on port ${PORT}`);
+  app.enableShutdownHooks();
+
+  process.on('SIGTERM', () => {
+    logger.log(`Process ${process.pid} received a SIGTERM signal`);
+    process.exit(0);
+  });
+
+  process.on('SIGINT', () => {
+    logger.log(`Process ${process.pid} has been interrupted`);
+    process.exit(0);
+  });
+
+  process.on('SIGQUIT', () => {
+    logger.log(`Process ${process.pid}, has been quited`);
+    process.exit(0);
+  });
+
+  await app.listen(PORT, () => {
+    logger.log(`Application listening on port ${PORT}`);
+  });
 }
 bootstrap();
