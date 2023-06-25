@@ -10,11 +10,16 @@ export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
   async getCurrentUser(userId: number) {
-    const user = await this.usersRepository.getCurrentUser(userId);
+    try {
+      const user = await this.usersRepository.getCurrentUser(userId);
 
-    this.logger.verbose(`The user [id ${userId}] has received their data`);
+      this.logger.verbose(`The user [id ${userId}] has received their data`);
 
-    return user;
+      return user;
+    } catch (error) {
+      this.logger.error(error.message);
+      return error;
+    }
   }
 
   async getAll() {
@@ -39,11 +44,5 @@ export class UsersService {
     this.logger.verbose(
       `User [id ${userId}] was registrated on meetup [id ${dto.meetupId}]`,
     );
-  }
-
-  async deleteCurrentUser(myId: number) {
-    await this.usersRepository.deleteUser(myId);
-
-    this.logger.verbose(`User [id ${myId}] was deleted.`);
   }
 }

@@ -1,4 +1,4 @@
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserOnMeetup } from '@prisma/client';
 import { IUsersRepository } from './users.repository.interface';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -24,7 +24,7 @@ export class UsersRepository implements IUsersRepository {
     return users;
   }
 
-  async updateUserInfo(userId: number, dto: UpdateUserDto): Promise<void> {
+  async updateUserInfo(userId: number, dto: UpdateUserDto): Promise<any> {
     const { firstName, lastName, userRole } = dto;
 
     const updateData: Prisma.UserUpdateInput = {};
@@ -41,7 +41,7 @@ export class UsersRepository implements IUsersRepository {
       updateData.userRole = userRole;
     }
 
-    await this.prisma.user.updateMany({
+    return await this.prisma.user.update({
       where: { id: userId },
       data: updateData,
     });
@@ -50,19 +50,11 @@ export class UsersRepository implements IUsersRepository {
   async registrateUserOnMeetup(
     userId: number,
     meetupId: number,
-  ): Promise<void> {
-    await this.prisma.userOnMeetup.create({
+  ): Promise<UserOnMeetup> {
+    return await this.prisma.userOnMeetup.create({
       data: {
         userId: userId,
         meetupId: meetupId,
-      },
-    });
-  }
-
-  async deleteUser(userId: number): Promise<void> {
-    await this.prisma.user.deleteMany({
-      where: {
-        id: userId,
       },
     });
   }

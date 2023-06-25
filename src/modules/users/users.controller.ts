@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -10,12 +9,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetUser, GetUserId } from 'src/common';
+import { GetUserId } from 'src/common';
 import { JwtAccessGuard } from 'src/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto';
 import { RegistrateUserDto } from './dto/registrate.user.dto';
-import { User } from '@prisma/client';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersInterceptor } from 'src/common/interceptors';
 
@@ -42,8 +40,8 @@ export class UsersController {
 
   @HttpCode(HttpStatus.OK)
   @Put('current')
-  updateCurrentUser(@GetUser() user: User, @Body() dto: UpdateUserDto) {
-    return this.usersService.updateCurrentUser(user.id, dto);
+  updateCurrentUser(@GetUserId() userId: number, @Body() dto: UpdateUserDto) {
+    return this.usersService.updateCurrentUser(userId, dto);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -53,11 +51,5 @@ export class UsersController {
     @Body() dto: RegistrateUserDto,
   ) {
     return this.usersService.registrateUserOnMeetup(userId, dto);
-  }
-
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('current')
-  deleteCurrentUser(@GetUser() user: User) {
-    return this.usersService.deleteCurrentUser(user.id);
   }
 }

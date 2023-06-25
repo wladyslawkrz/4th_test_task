@@ -6,6 +6,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtTokensService } from './jwt.tokens.service';
 import { AuthRepository } from './repository';
+import { APP_FILTER } from '@nestjs/core';
+import { PrismaExceptionFilter } from 'src/common';
 
 @Module({
   imports: [JwtModule.register({}), PassportModule],
@@ -16,6 +18,10 @@ import { AuthRepository } from './repository';
     AccessTokenStrategy,
     RefreshTokenStrategy,
     AuthRepository,
+    {
+      provide: APP_FILTER,
+      useClass: PrismaExceptionFilter,
+    },
   ],
 })
 export class AuthModule {}

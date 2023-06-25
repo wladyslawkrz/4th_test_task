@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Post,
   Res,
-  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -14,14 +13,12 @@ import {
   JwtRefreshGuard,
   GetUser,
   GetUserId,
-  PrismaExceptionFilter,
 } from 'src/common';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto, AuthSignInDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Authorization')
-@UseFilters(PrismaExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

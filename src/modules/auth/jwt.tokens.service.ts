@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import * as argon from 'argon2';
 import { Response } from 'express';
-import { Tokens } from 'src/common/types';
+import { JwtPayload, Tokens } from 'src/common/types';
 import { AuthRepository } from './repository';
 
 @Injectable()
@@ -14,6 +14,13 @@ export class JwtTokensService {
     private config: ConfigService,
     private authRepository: AuthRepository,
   ) {}
+
+  async validateToken(payload: JwtPayload) {
+    const user = await this.authRepository.getUserById(payload.sub);
+    if (!user) throw new UnauthorizedException();
+
+    return payload;
+  }
 
   async getBothTokens(
     userId: number,
