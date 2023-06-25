@@ -28,7 +28,7 @@ model UserOnMeetup {
   meetupId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  meetup    Meetup   @relation(fields: [meetupId], references: [id])
+  meetup    Meetup   @relation(fields: [meetupId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, meetupId])
@@ -58,7 +58,7 @@ model TagOnMeetup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   meetup    Meetup   @relation(fields: [meetupId], references: [id], onDelete: Cascade)
-  tag       Tag      @relation(fields: [tagId], references: [id])
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([tagId, meetupId])
   @@map("tagsOnMeetups")
