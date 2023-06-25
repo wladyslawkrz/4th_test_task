@@ -11,52 +11,82 @@ export class MeetupsService {
   constructor(private meetupsRepository: MeetupsRepository) {}
 
   async getAllMeetups(page: number, limit: number, dto: QueryParamsDto) {
-    const sortDirection = dto.sort || SortDirections.descending;
+    try {
+      const sortDirection = dto.sort || SortDirections.descending;
 
-    const meetups = await this.meetupsRepository.getAllMeetups(
-      page,
-      limit,
-      this.getWhereCondition(dto),
-      sortDirection,
-    );
+      const meetups = await this.meetupsRepository.getAllMeetups(
+        page,
+        limit,
+        this.getWhereCondition(dto),
+        sortDirection,
+      );
 
-    this.logger.verbose(
-      `Request for a list of meetups. User got ${meetups.length} rows.`,
-    );
+      this.logger.verbose(
+        `Request for a list of meetups. User got ${meetups.length} rows.`,
+      );
 
-    return { page, limit, meetups };
+      return { page, limit, meetups };
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async getMeetupById(id: number) {
-    const meetup = await this.meetupsRepository.getMeetupById(Number(id));
-    if (!meetup) return new NotFoundException('This meetup was not found');
+    try {
+      const meetup = await this.meetupsRepository.getMeetupById(Number(id));
+      if (!meetup) return new NotFoundException('This meetup was not found');
 
-    this.logger.verbose(`Request for meetup [id ${meetup.id}]`);
+      this.logger.verbose(`Request for meetup [id ${meetup.id}]`);
 
-    return meetup;
+      return meetup;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async postMeetup(userId: number, dto: PostMeetupDto) {
-    await this.meetupsRepository.createMeetup(userId, dto);
+    try {
+      await this.meetupsRepository.createMeetup(userId, dto);
 
-    this.logger.verbose(
-      `User [id ${userId}] created meetup '${dto.meetupName}'`,
-    );
+      this.logger.verbose(
+        `User [id ${userId}] created meetup '${dto.meetupName}'`,
+      );
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
-    await this.meetupsRepository.updateMeetup(Number(meetupId), dto);
+    try {
+      await this.meetupsRepository.updateMeetup(Number(meetupId), dto);
 
-    this.logger.verbose(`Meetup [id ${meetupId}] was updated.`);
+      this.logger.verbose(`Meetup [id ${meetupId}] was updated.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async deleteMeetup(meetupId: number) {
-    const meetup = await this.meetupsRepository.getMeetupById(meetupId);
-    if (!meetup) return new NotFoundException('This meetup was not found');
+    try {
+      const meetup = await this.meetupsRepository.getMeetupById(meetupId);
+      if (!meetup) return new NotFoundException('This meetup was not found');
 
-    await this.meetupsRepository.deleteMeetup(meetupId);
+      await this.meetupsRepository.deleteMeetup(meetupId);
 
-    this.logger.verbose(`Meetup [id ${meetupId}] was deleted.`);
+      this.logger.verbose(`Meetup [id ${meetupId}] was deleted.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   private getWhereCondition(dto: QueryParamsDto): Prisma.MeetupWhereInput {

@@ -17,32 +17,51 @@ export class UsersService {
 
       return user;
     } catch (error) {
-      this.logger.error(error.message);
+      this.logger.error(error);
+
       return error;
     }
   }
 
   async getAll() {
-    const users = await this.usersRepository.getAllUsers();
+    try {
+      const users = await this.usersRepository.getAllUsers();
 
-    this.logger.verbose(
-      `Request for a complete list of users: ${users.length} rows`,
-    );
+      this.logger.verbose(
+        `Request for a complete list of users: ${users.length} rows`,
+      );
 
-    return users;
+      return users;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async updateCurrentUser(myId: number, dto: UpdateUserDto) {
-    await this.usersRepository.updateUserInfo(myId, dto);
+    try {
+      await this.usersRepository.updateUserInfo(myId, dto);
 
-    this.logger.verbose(`User [id ${myId}] was updated.`);
+      this.logger.verbose(`User [id ${myId}] was updated.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async registrateUserOnMeetup(userId: number, dto: RegistrateUserDto) {
-    await this.usersRepository.registrateUserOnMeetup(userId, dto.meetupId);
+    try {
+      await this.usersRepository.registrateUserOnMeetup(userId, dto.meetupId);
 
-    this.logger.verbose(
-      `User [id ${userId}] was registrated on meetup [id ${dto.meetupId}]`,
-    );
+      this.logger.verbose(
+        `User [id ${userId}] was registrated on meetup [id ${dto.meetupId}]`,
+      );
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 }

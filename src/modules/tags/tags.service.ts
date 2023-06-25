@@ -9,42 +9,72 @@ export class TagsService {
   constructor(private tagsRepository: TagsRepository) {}
 
   async getAll() {
-    const tags = await this.tagsRepository.getAllTags();
+    try {
+      const tags = await this.tagsRepository.getAllTags();
 
-    this.logger.verbose(
-      `Request for a list of meetups. User got ${tags.length} rows.`,
-    );
+      this.logger.verbose(
+        `Request for a list of meetups. User got ${tags.length} rows.`,
+      );
 
-    return tags;
+      return tags;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async getTag(id: number) {
-    const tag = await this.tagsRepository.getOneTag(Number(id));
-    if (!tag) throw new NotFoundException('This tag was not found');
+    try {
+      const tag = await this.tagsRepository.getOneTag(Number(id));
+      if (!tag) throw new NotFoundException('This tag was not found');
 
-    this.logger.verbose(`Request for tag [id ${id}]`);
+      this.logger.verbose(`Request for tag [id ${id}]`);
 
-    return tag;
+      return tag;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async createTag(dto: CreateTagDto) {
-    await this.tagsRepository.createTag(dto.tagName);
+    try {
+      await this.tagsRepository.createTag(dto.tagName);
 
-    this.logger.verbose(`Created tag: ${dto.tagName}`);
+      this.logger.verbose(`Created tag: ${dto.tagName}`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async updateTag(dto: UpdateTagDto, id: number) {
-    const tag = await this.tagsRepository.getOneTag(Number(id));
-    if (!tag) throw new NotFoundException('This tag was not found');
+    try {
+      const tag = await this.tagsRepository.getOneTag(Number(id));
+      if (!tag) throw new NotFoundException('This tag was not found');
 
-    await this.tagsRepository.updateTag(dto.tagName, Number(id));
+      await this.tagsRepository.updateTag(dto.tagName, Number(id));
 
-    this.logger.verbose(`Tag [id ${id}] was updated.`);
+      this.logger.verbose(`Tag [id ${id}] was updated.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async deleteTag(id: number) {
-    await this.tagsRepository.deleteTag(Number(id));
+    try {
+      await this.tagsRepository.deleteTag(Number(id));
 
-    this.logger.verbose(`Tag [id ${id}] was deleted.`);
+      this.logger.verbose(`Tag [id ${id}] was deleted.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 }

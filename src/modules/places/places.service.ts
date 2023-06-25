@@ -9,47 +9,77 @@ export class PlacesService {
   constructor(private placesRepository: PlacesRepository) {}
 
   async getAllPlaces() {
-    const places = await this.placesRepository.getAllPlaces();
+    try {
+      const places = await this.placesRepository.getAllPlaces();
 
-    this.logger.verbose(
-      `Request for a list of places. User got ${places.length} rows.`,
-    );
+      this.logger.verbose(
+        `Request for a list of places. User got ${places.length} rows.`,
+      );
 
-    return places;
+      return places;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async getPlace(id: number) {
-    const place = await this.placesRepository.getOnePlace(Number(id));
-    if (!place) throw new NotFoundException('Place not found');
+    try {
+      const place = await this.placesRepository.getOnePlace(Number(id));
+      if (!place) throw new NotFoundException('Place not found');
 
-    this.logger.verbose(`Request for place [id ${id}]`);
+      this.logger.verbose(`Request for place [id ${id}]`);
 
-    return place;
+      return place;
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async addPlace(dto: CreatePlaceDto) {
-    await this.placesRepository.createPlace(dto);
+    try {
+      await this.placesRepository.createPlace(dto);
 
-    this.logger.verbose(
-      `Created place: ${dto.city}, ${dto.street}, ${dto.building}, ${dto.room}`,
-    );
+      this.logger.verbose(
+        `Created place: ${dto.city}, ${dto.street}, ${dto.building}, ${dto.room}`,
+      );
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async updatePlace(dto: UpdatePlaceDto, id: number) {
-    if (!(await this.placesRepository.getOnePlace(Number(id))))
-      throw new NotFoundException('Place not found');
+    try {
+      if (!(await this.placesRepository.getOnePlace(Number(id))))
+        throw new NotFoundException('Place not found');
 
-    await this.placesRepository.updatePlace(Number(id), dto);
+      await this.placesRepository.updatePlace(Number(id), dto);
 
-    this.logger.verbose(`Place [id ${id}] was updated.`);
+      this.logger.verbose(`Place [id ${id}] was updated.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 
   async deletePlace(id: number) {
-    if (!(await this.placesRepository.getOnePlace(Number(id))))
-      throw new NotFoundException('Place not found');
+    try {
+      if (!(await this.placesRepository.getOnePlace(Number(id))))
+        throw new NotFoundException('Place not found');
 
-    await this.placesRepository.deletePlace(Number(id));
+      await this.placesRepository.deletePlace(Number(id));
 
-    this.logger.verbose(`Place [id ${id}] was deleted.`);
+      this.logger.verbose(`Place [id ${id}] was deleted.`);
+    } catch (error) {
+      this.logger.error(error);
+
+      return error;
+    }
   }
 }
