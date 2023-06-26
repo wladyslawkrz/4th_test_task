@@ -18,11 +18,12 @@ import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
 import {
   GetUserId,
   JwtAccessGuard,
+  MeetupWithPlaceAndTags,
   PaginationPipe,
   Roles,
   RolesGuard,
 } from 'src/common';
-import { Role } from '@prisma/client';
+import { Meetup, Role } from '@prisma/client';
 import { MeetupsInterceptor } from 'src/common/interceptors';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
@@ -40,7 +41,11 @@ export class MeetupsController {
     @Query('page', new PaginationPipe(1)) page: number,
     @Query('limit', new PaginationPipe(10)) limit: number,
     @Query() params: QueryParamsDto,
-  ) {
+  ): Promise<{
+    page: number;
+    limit: number;
+    meetups: MeetupWithPlaceAndTags[];
+  }> {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
@@ -48,7 +53,9 @@ export class MeetupsController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
   @Get(':id')
-  getMeetupById(@Param('id', ParseIntPipe) id: number) {
+  getMeetupById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<MeetupWithPlaceAndTags> {
     return this.meetupsService.getMeetupById(id);
   }
 
@@ -56,7 +63,10 @@ export class MeetupsController {
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
-  createMeetup(@GetUserId() userId: number, @Body() dto: PostMeetupDto) {
+  createMeetup(
+    @GetUserId() userId: number,
+    @Body() dto: PostMeetupDto,
+  ): Promise<Meetup> {
     return this.meetupsService.postMeetup(userId, dto);
   }
 
@@ -69,7 +79,7 @@ export class MeetupsController {
     @GetUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMeetupDto,
-  ) {
+  ): Promise<Meetup> {
     return this.meetupsService.updateMeetupInfo(userId, id, dto);
   }
 
@@ -81,7 +91,7 @@ export class MeetupsController {
   deleteMeetup(
     @GetUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ) {
+  ): Promise<Meetup> {
     return this.meetupsService.deleteMeetup(userId, id);
   }
 }
