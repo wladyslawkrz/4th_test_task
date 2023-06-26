@@ -1,13 +1,14 @@
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { IMeetupsRepository } from './meetups.repository.interface';
-import { Prisma } from '@prisma/client';
+import { Meetup, Prisma } from '@prisma/client';
 import { SortDirections } from 'src/common/enum';
-import { PostMeetupDto, UpdateMeetupDto } from '../dto';
-import { Injectable } from '@nestjs/common';
+import { PostMeetupDto } from '../dto';
+import { Injectable, Logger } from '@nestjs/common';
 import { MeetupWithPlaceAndTags } from 'src/common';
 
 @Injectable()
 export class MeetupsRepository implements IMeetupsRepository {
+  logger = new Logger();
   constructor(private prisma: PrismaService) {}
 
   async getAllMeetups(
@@ -54,7 +55,7 @@ export class MeetupsRepository implements IMeetupsRepository {
     return meetup;
   }
 
-  async createMeetup(userId: number, dto: PostMeetupDto): Promise<void> {
+  async createMeetup(userId: number, dto: PostMeetupDto): Promise<Meetup> {
     const meetup = await this.prisma.meetup.create({
       data: {
         meetupName: dto.meetupName,
@@ -65,64 +66,40 @@ export class MeetupsRepository implements IMeetupsRepository {
       },
     });
 
-    if (dto.tags && dto.tags.length > 0) {
-      const tagIds = dto.tags;
-
-      const tagOnMeetupData = tagIds.map((tagId) => ({
-        tagId,
-        meetupId: meetup.id,
-      }));
-
-      await this.prisma.tagOnMeetup.createMany({
-        data: tagOnMeetupData,
-      });
-    }
+    return meetup;
   }
 
-  async updateMeetup(meetupId: number, dto: UpdateMeetupDto): Promise<void> {
-    const meetupData = {} as Prisma.MeetupUpdateInput;
+  async assignTags(id: number, tagIds: number[]): Promise<void> {
+    const tagOnMeetupData = tagIds.map((tagId) => ({
+      tagId,
+      meetupId: id,
+    }));
 
-    if (dto.meetupName) {
-      meetupData.meetupName = dto.meetupName;
-    }
+    await this.prisma.tagOnMeetup.createMany({
+      data: tagOnMeetupData,
+    });
+  }
 
-    if (dto.meetupDescription) {
-      meetupData.meetupDescription = dto.meetupDescription;
-    }
+  async deleteTags(id: number): Promise<void> {
+    await this.prisma.tagOnMeetup.deleteMany({
+      where: { meetupId: id },
+    });
+  }
 
-    if (dto.meetingTime) {
-      meetupData.meetingTime = dto.meetingTime;
-    }
-
-    if (dto.meetingPlaceId !== undefined) {
-      meetupData.place = { connect: { id: dto.meetingPlaceId } };
-    }
-
-    await this.prisma.meetup.updateMany({
+  async updateMeetup(
+    meetupId: number,
+    meetupData: Prisma.MeetupUpdateInput,
+  ): Promise<any> {
+    const updated = await this.prisma.meetup.updateMany({
       where: { id: meetupId },
       data: meetupData,
     });
 
-    if (dto.tags && dto.tags.length > 0) {
-      const tagIds = dto.tags;
-
-      await this.prisma.tagOnMeetup.deleteMany({
-        where: { meetupId },
-      });
-
-      const tagOnMeetupData = tagIds.map((tagId) => ({
-        tagId,
-        meetupId,
-      }));
-
-      await this.prisma.tagOnMeetup.createMany({
-        data: tagOnMeetupData,
-      });
-    }
+    return updated;
   }
 
-  async deleteMeetup(meetupId: number): Promise<void> {
-    await this.prisma.meetup.delete({
+  async deleteMeetup(meetupId: number): Promise<Meetup> {
+    return await this.prisma.meetup.delete({
       where: { id: meetupId },
     });
   }

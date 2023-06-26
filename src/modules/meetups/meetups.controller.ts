@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -23,7 +24,7 @@ import {
 } from 'src/common';
 import { Role } from '@prisma/client';
 import { MeetupsInterceptor } from 'src/common/interceptors';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Meetup actions')
@@ -43,11 +44,12 @@ export class MeetupsController {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
   @Get(':id')
-  getMeetupById(@Param() params: any) {
-    return this.meetupsService.getMeetupById(+params.id);
+  getMeetupById(@Param('id', ParseIntPipe) id: number) {
+    return this.meetupsService.getMeetupById(id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -58,23 +60,28 @@ export class MeetupsController {
     return this.meetupsService.postMeetup(userId, dto);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
   updateMeetupInfo(
     @GetUserId() userId: number,
-    @Param() params: any,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMeetupDto,
   ) {
-    return this.meetupsService.updateMeetupInfo(userId, +params.id, dto);
+    return this.meetupsService.updateMeetupInfo(userId, id, dto);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
-  deleteMeetup(@GetUserId() userId: number, @Param() params: any) {
-    return this.meetupsService.deleteMeetup(userId, +params.id);
+  deleteMeetup(
+    @GetUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.meetupsService.deleteMeetup(userId, id);
   }
 }

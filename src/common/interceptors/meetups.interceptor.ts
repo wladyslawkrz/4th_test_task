@@ -38,10 +38,14 @@ export class MeetupsInterceptor implements NestInterceptor {
   }
 
   getPlace(meetup: MeetupWithPlaceAndTags): string {
-    let place = meetup.place
-      ? `${meetup.place.city}, ${meetup.place.street}, ${meetup.place.building}`
-      : 'Venue is not specified';
-    if (meetup.place.room) place += `, ${meetup.place.room}`;
+    let place = '';
+
+    if (meetup.place) {
+      place = `${meetup.place.city}, ${meetup.place.street}, ${meetup.place.building}`;
+      if (meetup.place.room) place += `, ${meetup.place.room}`;
+    } else {
+      place = 'Venue is not specified';
+    }
 
     return place;
   }
