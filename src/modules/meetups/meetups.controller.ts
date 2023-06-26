@@ -55,22 +55,26 @@ export class MeetupsController {
   @Roles(Role.Organizer)
   @Post('create')
   createMeetup(@GetUserId() userId: number, @Body() dto: PostMeetupDto) {
-    return this.meetupsService.postMeetup(+userId, dto);
+    return this.meetupsService.postMeetup(userId, dto);
   }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
-  updateMeetupInfo(@Param() params: any, @Body() dto: UpdateMeetupDto) {
-    return this.meetupsService.updateMeetupInfo(+params.id, dto);
+  updateMeetupInfo(
+    @GetUserId() userId: number,
+    @Param() params: any,
+    @Body() dto: UpdateMeetupDto,
+  ) {
+    return this.meetupsService.updateMeetupInfo(userId, +params.id, dto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
-  deleteMeetup(@Param() params: any) {
-    return this.meetupsService.deleteMeetup(+params.id);
+  deleteMeetup(@GetUserId() userId: number, @Param() params: any) {
+    return this.meetupsService.deleteMeetup(userId, +params.id);
   }
 }

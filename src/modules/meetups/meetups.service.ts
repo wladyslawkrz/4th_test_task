@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
 import { SortDirections } from 'src/common/enum';
 import { MeetupsRepository } from './repository/meetups.repository';
@@ -62,8 +67,15 @@ export class MeetupsService {
     }
   }
 
-  async updateMeetupInfo(meetupId: number, dto: UpdateMeetupDto) {
+  async updateMeetupInfo(userId, meetupId: number, dto: UpdateMeetupDto) {
     try {
+      const meetup = await this.meetupsRepository.getMeetupById(meetupId);
+
+      if (!meetup) throw new NotFoundException('This meetup was not found.');
+
+      if (!(meetup.meetupCreatorId == userId))
+        throw new ForbiddenException('This is not yours meetup!');
+
       await this.meetupsRepository.updateMeetup(Number(meetupId), dto);
 
       this.logger.verbose(`Meetup [id ${meetupId}] was updated.`);
@@ -74,10 +86,13 @@ export class MeetupsService {
     }
   }
 
-  async deleteMeetup(meetupId: number) {
+  async deleteMeetup(userId: number, meetupId: number) {
     try {
       const meetup = await this.meetupsRepository.getMeetupById(meetupId);
       if (!meetup) return new NotFoundException('This meetup was not found');
+
+      if (!(meetup.meetupCreatorId == userId))
+        throw new ForbiddenException('This is not yours meetup!');
 
       await this.meetupsRepository.deleteMeetup(meetupId);
 
