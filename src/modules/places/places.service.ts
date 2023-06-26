@@ -26,7 +26,7 @@ export class PlacesService {
 
   async getPlace(id: number) {
     try {
-      const place = await this.placesRepository.getOnePlace(Number(id));
+      const place = await this.placesRepository.getOnePlace(id);
       if (!place) throw new NotFoundException('Place not found');
 
       this.logger.verbose(`Request for place [id ${id}]`);
@@ -55,10 +55,10 @@ export class PlacesService {
 
   async updatePlace(dto: UpdatePlaceDto, id: number) {
     try {
-      if (!(await this.placesRepository.getOnePlace(Number(id))))
+      if (!(await this.placesRepository.getOnePlace(id)))
         throw new NotFoundException('Place not found');
 
-      await this.placesRepository.updatePlace(Number(id), dto);
+      await this.placesRepository.updatePlace(id, dto);
 
       this.logger.verbose(`Place [id ${id}] was updated.`);
     } catch (error) {
@@ -70,10 +70,10 @@ export class PlacesService {
 
   async deletePlace(id: number) {
     try {
-      if (!(await this.placesRepository.getOnePlace(Number(id))))
+      if (!(await this.placesRepository.getOnePlace(id)))
         throw new NotFoundException('Place not found');
 
-      await this.placesRepository.deletePlace(Number(id));
+      await this.placesRepository.deletePlace(id);
 
       this.logger.verbose(`Place [id ${id}] was deleted.`);
     } catch (error) {

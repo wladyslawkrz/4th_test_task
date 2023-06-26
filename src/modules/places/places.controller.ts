@@ -36,7 +36,7 @@ export class PlacesController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getPlace(@Param() params: any) {
-    return this.placesService.getPlace(params.id);
+    return this.placesService.getPlace(+params.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -52,7 +52,7 @@ export class PlacesController {
   @Roles(Role.Organizer)
   @Put('update/:id')
   updatePlace(@Body() dto: UpdatePlaceDto, @Param() params: any) {
-    return this.placesService.updatePlace(dto, params.id);
+    return this.placesService.updatePlace(dto, +params.id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -60,6 +60,6 @@ export class PlacesController {
   @Roles(Role.Organizer)
   @Delete('delete/:id')
   deletePlace(@Param() params: any) {
-    return this.placesService.deletePlace(params.id);
+    return this.placesService.deletePlace(+params.id);
   }
 }

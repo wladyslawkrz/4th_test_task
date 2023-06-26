@@ -26,7 +26,7 @@ export class TagsService {
 
   async getTag(id: number) {
     try {
-      const tag = await this.tagsRepository.getOneTag(Number(id));
+      const tag = await this.tagsRepository.getOneTag(id);
       if (!tag) throw new NotFoundException('This tag was not found');
 
       this.logger.verbose(`Request for tag [id ${id}]`);
@@ -53,10 +53,10 @@ export class TagsService {
 
   async updateTag(dto: UpdateTagDto, id: number) {
     try {
-      const tag = await this.tagsRepository.getOneTag(Number(id));
+      const tag = await this.tagsRepository.getOneTag(id);
       if (!tag) throw new NotFoundException('This tag was not found');
 
-      await this.tagsRepository.updateTag(dto.tagName, Number(id));
+      await this.tagsRepository.updateTag(dto.tagName, id);
 
       this.logger.verbose(`Tag [id ${id}] was updated.`);
     } catch (error) {
@@ -68,7 +68,7 @@ export class TagsService {
 
   async deleteTag(id: number) {
     try {
-      await this.tagsRepository.deleteTag(Number(id));
+      await this.tagsRepository.deleteTag(id);
 
       this.logger.verbose(`Tag [id ${id}] was deleted.`);
     } catch (error) {

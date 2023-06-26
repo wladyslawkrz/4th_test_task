@@ -36,7 +36,7 @@ export class TagsController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getTag(@Param() params: any) {
-    return this.tagsService.getTag(params.id);
+    return this.tagsService.getTag(+params.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -52,7 +52,7 @@ export class TagsController {
   @Roles(Role.Organizer)
   @Put('update/:id')
   updateTag(@Param() params: any, @Body() dto: UpdateTagDto) {
-    return this.tagsService.updateTag(dto, params.id);
+    return this.tagsService.updateTag(dto, +params.id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -60,6 +60,6 @@ export class TagsController {
   @Roles(Role.Organizer)
   @Delete('delete/:id')
   deleteTag(@Param() params: any) {
-    return this.tagsService.deleteTag(params.id);
+    return this.tagsService.deleteTag(+params.id);
   }
 }

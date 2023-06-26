@@ -47,7 +47,7 @@ export class MeetupsController {
   @UseInterceptors(MeetupsInterceptor)
   @Get(':id')
   getMeetupById(@Param() params: any) {
-    return this.meetupsService.getMeetupById(params.id);
+    return this.meetupsService.getMeetupById(+params.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -55,7 +55,7 @@ export class MeetupsController {
   @Roles(Role.Organizer)
   @Post('create')
   createMeetup(@GetUserId() userId: number, @Body() dto: PostMeetupDto) {
-    return this.meetupsService.postMeetup(userId, dto);
+    return this.meetupsService.postMeetup(+userId, dto);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -63,7 +63,7 @@ export class MeetupsController {
   @Roles(Role.Organizer)
   @Put('update/:id')
   updateMeetupInfo(@Param() params: any, @Body() dto: UpdateMeetupDto) {
-    return this.meetupsService.updateMeetupInfo(params.id, dto);
+    return this.meetupsService.updateMeetupInfo(+params.id, dto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -71,6 +71,6 @@ export class MeetupsController {
   @Roles(Role.Organizer)
   @Delete('delete/:id')
   deleteMeetup(@Param() params: any) {
-    return this.meetupsService.deleteMeetup(Number(params.id));
+    return this.meetupsService.deleteMeetup(+params.id);
   }
 }
