@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import * as argon from 'argon2';
 import { Response } from 'express';
-import { JwtPayload, Tokens } from 'src/common/types';
+import { Tokens } from 'src/common/types';
 import { AuthRepository } from './repository';
 
 @Injectable()
@@ -14,14 +14,6 @@ export class JwtTokensService {
     private config: ConfigService,
     private authRepository: AuthRepository,
   ) {}
-
-  async validateToken(payload: JwtPayload) {
-    const user = await this.authRepository.getUserById(payload.sub);
-    if (!user) throw new UnauthorizedException();
-
-    return payload;
-  }
-
   async getBothTokens(
     userId: number,
     email: string,
@@ -58,19 +50,22 @@ export class JwtTokensService {
     };
   }
 
-  async updateRefreshTokenHash(userId: number, refreshToken: string) {
+  async updateRefreshTokenHash(
+    userId: number,
+    refreshToken: string,
+  ): Promise<Prisma.BatchPayload> {
     const hash = await argon.hash(refreshToken);
-    await this.authRepository.updateRefreshToken(userId, hash);
+    return await this.authRepository.updateRefreshToken(userId, hash);
   }
 
-  sendAccessTokenWithCookies(response: Response, access_token: string) {
+  sendAccessTokenWithCookies(response: Response, access_token: string): void {
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
     });
   }
 
-  sendRefreshTokenWithCookies(response: Response, refresh_token: string) {
+  sendRefreshTokenWithCookies(response: Response, refresh_token: string): void {
     response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
@@ -82,7 +77,7 @@ export class JwtTokensService {
     email: string,
     role: Role,
     response: Response,
-  ) {
+  ): Promise<void> {
     const tokens = await this.getBothTokens(userId, email, role);
     await this.updateRefreshTokenHash(userId, tokens.refresh_token);
 
