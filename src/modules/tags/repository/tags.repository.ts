@@ -1,4 +1,4 @@
-import { Tag } from '@prisma/client';
+import { Prisma, Tag } from '@prisma/client';
 import { ITagsRepository } from './tags.repository.interface';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -7,8 +7,8 @@ import { Injectable } from '@nestjs/common';
 export class TagsRepository implements ITagsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createTag(name: string): Promise<void> {
-    await this.prisma.tag.create({
+  async createTag(name: string): Promise<Tag> {
+    return await this.prisma.tag.create({
       data: {
         tagName: name,
       },
@@ -31,8 +31,8 @@ export class TagsRepository implements ITagsRepository {
     return tag;
   }
 
-  async updateTag(name: string, tagId: number): Promise<void> {
-    await this.prisma.tag.update({
+  async updateTag(name: string, tagId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.tag.updateMany({
       data: { tagName: name },
       where: {
         id: tagId,
@@ -40,7 +40,7 @@ export class TagsRepository implements ITagsRepository {
     });
   }
 
-  async deleteTag(tagId: number): Promise<void> {
-    await this.prisma.tag.delete({ where: { id: tagId } });
+  async deleteTag(tagId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.tag.deleteMany({ where: { id: tagId } });
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { TagsRepository } from './repository';
+import { Prisma, Tag } from '@prisma/client';
 
 @Injectable()
 export class TagsService {
@@ -8,73 +9,49 @@ export class TagsService {
 
   constructor(private tagsRepository: TagsRepository) {}
 
-  async getAll() {
-    try {
-      const tags = await this.tagsRepository.getAllTags();
+  async getAll(): Promise<Tag[]> {
+    const tags = await this.tagsRepository.getAllTags();
 
-      this.logger.verbose(
-        `Request for a list of meetups. User got ${tags.length} rows.`,
-      );
+    this.logger.verbose(
+      `Request for a list of meetups. User got ${tags.length} rows.`,
+    );
 
-      return tags;
-    } catch (error) {
-      this.logger.error(error);
-
-      return error;
-    }
+    return tags;
   }
 
-  async getTag(id: number) {
-    try {
-      const tag = await this.tagsRepository.getOneTag(id);
-      if (!tag) throw new NotFoundException('This tag was not found');
+  async getTag(id: number): Promise<Tag> {
+    const tag = await this.tagsRepository.getOneTag(id);
+    if (!tag) throw new NotFoundException('This tag was not found');
 
-      this.logger.verbose(`Request for tag [id ${id}]`);
+    this.logger.verbose(`Request for tag [id ${id}]`);
 
-      return tag;
-    } catch (error) {
-      this.logger.error(error);
-
-      return error;
-    }
+    return tag;
   }
 
-  async createTag(dto: CreateTagDto) {
-    try {
-      await this.tagsRepository.createTag(dto.tagName);
+  async createTag(dto: CreateTagDto): Promise<Tag> {
+    const creationResult = await this.tagsRepository.createTag(dto.tagName);
 
-      this.logger.verbose(`Created tag: ${dto.tagName}`);
-    } catch (error) {
-      this.logger.error(error);
+    this.logger.verbose(`Created tag: ${dto.tagName}`);
 
-      return error;
-    }
+    return creationResult;
   }
 
-  async updateTag(dto: UpdateTagDto, id: number) {
-    try {
-      const tag = await this.tagsRepository.getOneTag(id);
-      if (!tag) throw new NotFoundException('This tag was not found');
+  async updateTag(dto: UpdateTagDto, id: number): Promise<Prisma.BatchPayload> {
+    const tag = await this.tagsRepository.getOneTag(id);
+    if (!tag) throw new NotFoundException('This tag was not found');
 
-      await this.tagsRepository.updateTag(dto.tagName, id);
+    const updateResult = await this.tagsRepository.updateTag(dto.tagName, id);
 
-      this.logger.verbose(`Tag [id ${id}] was updated.`);
-    } catch (error) {
-      this.logger.error(error);
+    this.logger.verbose(`Tag [id ${id}] was updated.`);
 
-      return error;
-    }
+    return updateResult;
   }
 
-  async deleteTag(id: number) {
-    try {
-      await this.tagsRepository.deleteTag(id);
+  async deleteTag(id: number): Promise<Prisma.BatchPayload> {
+    const deletionResult = await this.tagsRepository.deleteTag(id);
 
-      this.logger.verbose(`Tag [id ${id}] was deleted.`);
-    } catch (error) {
-      this.logger.error(error);
+    this.logger.verbose(`Tag [id ${id}] was deleted.`);
 
-      return error;
-    }
+    return deletionResult;
   }
 }

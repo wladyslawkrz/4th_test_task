@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -15,7 +16,7 @@ import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Role } from '@prisma/client';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { TagsInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
@@ -32,11 +33,12 @@ export class TagsController {
     return this.tagsService.getAll();
   }
 
+  @ApiParam({ name: 'id', description: 'Enter tag id' })
   @UseInterceptors(TagsInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getTag(@Param() params: any) {
-    return this.tagsService.getTag(+params.id);
+  getTag(@Param('id', ParseIntPipe) id: number) {
+    return this.tagsService.getTag(id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -47,19 +49,21 @@ export class TagsController {
     return this.tagsService.createTag(dto);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter tag id' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
-  updateTag(@Param() params: any, @Body() dto: UpdateTagDto) {
-    return this.tagsService.updateTag(dto, +params.id);
+  updateTag(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateTagDto) {
+    return this.tagsService.updateTag(dto, id);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter tag id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
-  deleteTag(@Param() params: any) {
-    return this.tagsService.deleteTag(+params.id);
+  deleteTag(@Param('id', ParseIntPipe) id: number) {
+    return this.tagsService.deleteTag(id);
   }
 }
