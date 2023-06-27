@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto';
 import { RegistrateUserDto } from './dto/registrate.user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersInterceptor } from 'src/common/interceptors';
+import { Prisma, User, UserOnMeetup } from '@prisma/client';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -27,20 +28,23 @@ export class UsersController {
   @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllUsers() {
+  getAllUsers(): Promise<User[]> {
     return this.usersService.getAll();
   }
 
   @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get('current')
-  getCurrentUser(@GetUserId() userId: number) {
+  getCurrentUser(@GetUserId() userId: number): Promise<User> {
     return this.usersService.getCurrentUser(userId);
   }
 
   @HttpCode(HttpStatus.OK)
   @Put('current')
-  updateCurrentUser(@GetUserId() userId: number, @Body() dto: UpdateUserDto) {
+  updateCurrentUser(
+    @GetUserId() userId: number,
+    @Body() dto: UpdateUserDto,
+  ): Promise<Prisma.BatchPayload> {
     return this.usersService.updateCurrentUser(userId, dto);
   }
 
@@ -49,7 +53,7 @@ export class UsersController {
   registrateCurrentUserOnMeetup(
     @GetUserId() userId: number,
     @Body() dto: RegistrateUserDto,
-  ) {
+  ): Promise<UserOnMeetup> {
     return this.usersService.registrateUserOnMeetup(userId, dto);
   }
 }

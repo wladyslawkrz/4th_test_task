@@ -2,7 +2,6 @@ import { Prisma, User, UserOnMeetup } from '@prisma/client';
 import { IUsersRepository } from './users.repository.interface';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { UpdateUserDto } from '../dto';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -24,24 +23,11 @@ export class UsersRepository implements IUsersRepository {
     return users;
   }
 
-  async updateUserInfo(userId: number, dto: UpdateUserDto): Promise<any> {
-    const { firstName, lastName, userRole } = dto;
-
-    const updateData: Prisma.UserUpdateInput = {};
-
-    if (firstName) {
-      updateData.firstName = firstName;
-    }
-
-    if (lastName) {
-      updateData.lastName = lastName;
-    }
-
-    if (userRole) {
-      updateData.userRole = userRole;
-    }
-
-    return await this.prisma.user.update({
+  async updateUserInfo(
+    userId: number,
+    updateData: Prisma.UserUpdateInput,
+  ): Promise<Prisma.BatchPayload> {
+    return await this.prisma.user.updateMany({
       where: { id: userId },
       data: updateData,
     });
