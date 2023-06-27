@@ -5,6 +5,7 @@ import { JwtTokensService } from './jwt.tokens.service';
 import { AuthSignInDto } from './dto';
 import { AuthRepository } from './repository';
 import { AuthSignUpDto } from './dto/auth.signup.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private authRepository: AuthRepository,
   ) {}
 
-  async signUp(dto: AuthSignUpDto, response: Response) {
+  async signUp(dto: AuthSignUpDto, response: Response): Promise<void> {
     const passwordHashed = await argon.hash(dto.password);
 
     const newUser = await this.authRepository.createUser(dto, passwordHashed);
@@ -26,10 +27,11 @@ export class AuthService {
       newUser.userRole,
       response,
     );
+
     this.logger.verbose(`New user registered: ${dto.email}`);
   }
 
-  async signIn(dto: AuthSignInDto, response: Response) {
+  async signIn(dto: AuthSignInDto, response: Response): Promise<void> {
     const user = await this.authRepository.getUserByCredentials(dto.email);
 
     if (!user)
@@ -53,8 +55,11 @@ export class AuthService {
     this.logger.verbose(`User logged in: ${dto.email}`);
   }
 
-  async logout(userId: number, response: Response) {
-    await this.authRepository.destroyRefreshToken(userId);
+  async logout(
+    userId: number,
+    response: Response,
+  ): Promise<Prisma.BatchPayload> {
+    const result = await this.authRepository.destroyRefreshToken(userId);
 
     response.clearCookie('access_token');
     response.clearCookie('refresh_token');
@@ -62,13 +67,15 @@ export class AuthService {
     this.logger.verbose(
       `User logged out: id ${userId}, access and refresh tokens destroyed.`,
     );
+
+    return result;
   }
 
   async refreshTokens(
     userId: number,
     refreshToken: string,
     response: Response,
-  ) {
+  ): Promise<void> {
     const user = await this.authRepository.getUserById(userId);
 
     if (!user || !user.refreshToken)

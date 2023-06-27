@@ -1,7 +1,7 @@
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { IAuthRepository } from './auth.repository.interface';
 import { Injectable } from '@nestjs/common';
-import { Role, User } from '@prisma/client';
+import { Prisma, Role, User } from '@prisma/client';
 import { AuthSignUpDto } from '../dto';
 
 @Injectable()
@@ -42,8 +42,11 @@ export class AuthRepository implements IAuthRepository {
     return user;
   }
 
-  async updateRefreshToken(userId: number, token: string): Promise<void> {
-    await this.prisma.user.update({
+  async updateRefreshToken(
+    userId: number,
+    token: string,
+  ): Promise<Prisma.BatchPayload> {
+    return await this.prisma.user.updateMany({
       where: {
         id: userId,
       },
@@ -51,8 +54,8 @@ export class AuthRepository implements IAuthRepository {
     });
   }
 
-  async destroyRefreshToken(userId: number): Promise<void> {
-    await this.prisma.user.updateMany({
+  async destroyRefreshToken(userId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.user.updateMany({
       where: {
         id: userId,
         refreshToken: {

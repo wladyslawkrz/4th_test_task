@@ -17,6 +17,7 @@ import {
 import { AuthService } from './auth.service';
 import { AuthSignUpDto, AuthSignInDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -28,7 +29,7 @@ export class AuthController {
   signUp(
     @Body() dto: AuthSignUpDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     return this.authService.signUp(dto, response);
   }
 
@@ -37,7 +38,7 @@ export class AuthController {
   signIn(
     @Body() dto: AuthSignInDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     return this.authService.signIn(dto, response);
   }
 
@@ -47,7 +48,7 @@ export class AuthController {
   logout(
     @GetUserId() userId: number,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<Prisma.BatchPayload> {
     return this.authService.logout(userId, response);
   }
 
@@ -58,7 +59,7 @@ export class AuthController {
     @GetUserId() userId: number,
     @GetUser('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     return this.authService.refreshTokens(userId, refreshToken, response);
   }
 }
