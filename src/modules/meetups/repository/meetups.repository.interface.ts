@@ -14,9 +14,9 @@ export interface IMeetupsRepository {
   createMeetup(userId: number, dto: PostMeetupDto): Promise<Meetup>;
   updateMeetup(
     meetupId: number,
-    meetupData: Prisma.MeetupUpdateInput,
-  ): Promise<void>;
-  deleteMeetup(meetupId: number): Promise<Meetup>;
-  assignTags(id: number, tagIds: number[]): Promise<void>;
-  deleteTags(id: number): Promise<void>;
+    meetupData: Prisma.MeetupUncheckedUpdateInput,
+  ): Promise<Prisma.BatchPayload>;
+  deleteMeetup(meetupId: number): Promise<Prisma.BatchPayload>;
+  assignTags(id: number, tagIds: number[]): Promise<Prisma.BatchPayload>;
+  deleteTags(id: number): Promise<Prisma.BatchPayload>;
 }

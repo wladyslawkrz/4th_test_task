@@ -78,7 +78,7 @@ export class MeetupsService {
     userId: number,
     meetupId: number,
     dto: UpdateMeetupDto,
-  ): Promise<Meetup> {
+  ): Promise<Prisma.BatchPayload> {
     const meetup = await this.meetupsRepository.getMeetupById(meetupId);
     if (!meetup) throw new NotFoundException('This meetup was not found.');
 
@@ -91,8 +91,8 @@ export class MeetupsService {
     );
 
     if (dto.tags && dto.tags.length > 0) {
-      await this.meetupsRepository.deleteTags(updatedMeetup.id);
-      await this.meetupsRepository.assignTags(updatedMeetup.id, dto.tags);
+      await this.meetupsRepository.deleteTags(meetupId);
+      await this.meetupsRepository.assignTags(meetupId, dto.tags);
     }
 
     this.logger.verbose(`Meetup [id ${meetupId}] was updated.`);
@@ -100,7 +100,10 @@ export class MeetupsService {
     return updatedMeetup;
   }
 
-  async deleteMeetup(userId: number, meetupId: number): Promise<Meetup> {
+  async deleteMeetup(
+    userId: number,
+    meetupId: number,
+  ): Promise<Prisma.BatchPayload> {
     const meetup = await this.meetupsRepository.getMeetupById(meetupId);
     if (!meetup) throw new NotFoundException('This meetup was not found');
 
@@ -117,7 +120,7 @@ export class MeetupsService {
   }
 
   private getMeetupUpdateInput(dto: UpdateMeetupDto) {
-    const meetupData: Prisma.MeetupUpdateInput = {};
+    const meetupData: Prisma.MeetupUncheckedUpdateInput = {};
 
     if (dto.meetupName) {
       meetupData.meetupName = dto.meetupName;
@@ -131,8 +134,8 @@ export class MeetupsService {
       meetupData.meetingTime = dto.meetingTime;
     }
 
-    if (dto.meetingPlaceId !== undefined) {
-      meetupData.place = { connect: { id: dto.meetingPlaceId } };
+    if (dto.meetingPlaceId) {
+      meetupData.meetingPlaceId = dto.meetingPlaceId;
     }
 
     return meetupData;

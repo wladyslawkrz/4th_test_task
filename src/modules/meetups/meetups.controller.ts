@@ -23,7 +23,7 @@ import {
   Roles,
   RolesGuard,
 } from 'src/common';
-import { Meetup, Role } from '@prisma/client';
+import { Meetup, Prisma, Role } from '@prisma/client';
 import { MeetupsInterceptor } from 'src/common/interceptors';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
@@ -79,7 +79,7 @@ export class MeetupsController {
     @GetUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMeetupDto,
-  ): Promise<Meetup> {
+  ): Promise<Prisma.BatchPayload> {
     return this.meetupsService.updateMeetupInfo(userId, id, dto);
   }
 
@@ -91,7 +91,7 @@ export class MeetupsController {
   deleteMeetup(
     @GetUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Meetup> {
+  ): Promise<Prisma.BatchPayload> {
     return this.meetupsService.deleteMeetup(userId, id);
   }
 }

@@ -69,19 +69,19 @@ export class MeetupsRepository implements IMeetupsRepository {
     return meetup;
   }
 
-  async assignTags(id: number, tagIds: number[]): Promise<void> {
+  async assignTags(id: number, tagIds: number[]): Promise<Prisma.BatchPayload> {
     const tagOnMeetupData = tagIds.map((tagId) => ({
       tagId,
       meetupId: id,
     }));
 
-    await this.prisma.tagOnMeetup.createMany({
+    return await this.prisma.tagOnMeetup.createMany({
       data: tagOnMeetupData,
     });
   }
 
-  async deleteTags(id: number): Promise<void> {
-    await this.prisma.tagOnMeetup.deleteMany({
+  async deleteTags(id: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.tagOnMeetup.deleteMany({
       where: { meetupId: id },
     });
   }
@@ -89,7 +89,7 @@ export class MeetupsRepository implements IMeetupsRepository {
   async updateMeetup(
     meetupId: number,
     meetupData: Prisma.MeetupUpdateInput,
-  ): Promise<any> {
+  ): Promise<Prisma.BatchPayload> {
     const updated = await this.prisma.meetup.updateMany({
       where: { id: meetupId },
       data: meetupData,
@@ -98,8 +98,8 @@ export class MeetupsRepository implements IMeetupsRepository {
     return updated;
   }
 
-  async deleteMeetup(meetupId: number): Promise<Meetup> {
-    return await this.prisma.meetup.delete({
+  async deleteMeetup(meetupId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.meetup.deleteMany({
       where: { id: meetupId },
     });
   }
