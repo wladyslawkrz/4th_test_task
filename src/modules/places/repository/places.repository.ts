@@ -1,4 +1,4 @@
-import { Place } from '@prisma/client';
+import { Place, Prisma } from '@prisma/client';
 import { IPlacesRepository } from './places.repository.interface';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -24,21 +24,24 @@ export class PlacesRepository implements IPlacesRepository {
     return place;
   }
 
-  async createPlace(dto: CreatePlaceDto): Promise<void> {
-    await this.prisma.place.create({
+  async createPlace(dto: CreatePlaceDto): Promise<Place> {
+    return await this.prisma.place.create({
       data: dto,
     });
   }
 
-  async updatePlace(placeId: number, dto: UpdatePlaceDto): Promise<void> {
-    await this.prisma.place.update({
+  async updatePlace(
+    placeId: number,
+    dto: UpdatePlaceDto,
+  ): Promise<Prisma.BatchPayload> {
+    return await this.prisma.place.updateMany({
       where: { id: placeId },
       data: dto,
     });
   }
 
-  async deletePlace(placeId: number): Promise<void> {
-    await this.prisma.place.delete({
+  async deletePlace(placeId: number): Promise<Prisma.BatchPayload> {
+    return await this.prisma.place.deleteMany({
       where: {
         id: placeId,
       },

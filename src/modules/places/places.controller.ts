@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -14,8 +15,8 @@ import {
 import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
-import { Role } from '@prisma/client';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Place, Prisma, Role } from '@prisma/client';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PlacesInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
@@ -28,38 +29,46 @@ export class PlacesController {
   @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllPlaces() {
+  getAllPlaces(): Promise<Place[]> {
     return this.placesService.getAllPlaces();
   }
 
+  @ApiParam({ name: 'id', description: 'Enter place id' })
   @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getPlace(@Param() params: any) {
-    return this.placesService.getPlace(+params.id);
+  getPlace(@Param('id', ParseIntPipe) id: number): Promise<Place> {
+    return this.placesService.getPlace(id);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
-  addPlace(@Body() dto: CreatePlaceDto) {
+  addPlace(@Body() dto: CreatePlaceDto): Promise<Place> {
     return this.placesService.addPlace(dto);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter place id' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
-  updatePlace(@Body() dto: UpdatePlaceDto, @Param() params: any) {
-    return this.placesService.updatePlace(dto, +params.id);
+  updatePlace(
+    @Body() dto: UpdatePlaceDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Prisma.BatchPayload> {
+    return this.placesService.updatePlace(dto, id);
   }
 
+  @ApiParam({ name: 'id', description: 'Enter place id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
-  deletePlace(@Param() params: any) {
-    return this.placesService.deletePlace(+params.id);
+  deletePlace(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Prisma.BatchPayload> {
+    return this.placesService.deletePlace(id);
   }
 }
