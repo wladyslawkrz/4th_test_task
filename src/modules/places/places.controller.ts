@@ -23,6 +23,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -42,6 +43,7 @@ import { PlacesInterceptor } from 'src/common/interceptors';
 export class PlacesController {
   constructor(private placesService: PlacesService) {}
 
+  @ApiOperation({ summary: 'Get a list places' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -50,6 +52,7 @@ export class PlacesController {
     return this.placesService.getAllPlaces();
   }
 
+  @ApiOperation({ summary: 'Get a specific place' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @ApiNotFoundResponse({ description: 'Place not found' })
   @ApiParam({ name: 'id', description: 'Enter place id' })
@@ -60,6 +63,7 @@ export class PlacesController {
     return this.placesService.getPlace(id);
   }
 
+  @ApiOperation({ summary: 'Create new place' })
   @ApiCreatedResponse({ description: 'New place has been created' })
   @ApiForbiddenResponse({
     description: 'You are not allowed to perform this action',
@@ -72,6 +76,7 @@ export class PlacesController {
     return this.placesService.addPlace(dto);
   }
 
+  @ApiOperation({ summary: 'Update specific place info' })
   @ApiOkResponse({ description: 'Place has been updated successfully' })
   @ApiNotFoundResponse({ description: 'Place not found' })
   @ApiForbiddenResponse({
@@ -89,6 +94,7 @@ export class PlacesController {
     return this.placesService.updatePlace(dto, id);
   }
 
+  @ApiOperation({ summary: 'Delete place' })
   @ApiOkResponse({ description: 'Place has been deleted successfully' })
   @ApiNotFoundResponse({ description: 'Place not found' })
   @ApiForbiddenResponse({

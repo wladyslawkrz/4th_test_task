@@ -19,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -38,6 +39,7 @@ import { Prisma, User, UserOnMeetup } from '@prisma/client';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Get a list of users' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -46,6 +48,7 @@ export class UsersController {
     return this.usersService.getAll();
   }
 
+  @ApiOperation({ summary: 'Get current user info' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @UseInterceptors(UsersInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -54,6 +57,7 @@ export class UsersController {
     return this.usersService.getCurrentUser(userId);
   }
 
+  @ApiOperation({ summary: 'Update current user info' })
   @ApiOkResponse({ description: 'User data has been updated' })
   @HttpCode(HttpStatus.OK)
   @Put('current')
@@ -64,6 +68,7 @@ export class UsersController {
     return this.usersService.updateCurrentUser(userId, dto);
   }
 
+  @ApiOperation({ summary: 'Register current user on meetup' })
   @ApiCreatedResponse({
     description: 'User has been registraten on the meetup',
   })
