@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { PrismaExceptionFilter } from './common';
+import { AllExceptionsFilter, PrismaExceptionFilter } from './common';
 import { initializeSwaggerDocument } from './common/swagger';
 
 async function bootstrap() {
@@ -20,6 +20,7 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new PrismaExceptionFilter());
 
   app.use(cookieParser());
