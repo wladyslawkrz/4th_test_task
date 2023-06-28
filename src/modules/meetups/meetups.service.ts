@@ -1,7 +1,6 @@
 import {
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -26,26 +25,20 @@ export class MeetupsService {
     limit: number;
     meetups: MeetupWithPlaceAndTags[];
   }> {
-    try {
-      const sortDirection = dto.sort || SortDirections.descending;
+    const sortDirection = dto.sort || SortDirections.descending;
 
-      const meetups = await this.meetupsRepository.getAllMeetups(
-        page,
-        limit,
-        this.getWhereCondition(dto),
-        sortDirection,
-      );
+    const meetups = await this.meetupsRepository.getAllMeetups(
+      page,
+      limit,
+      this.getWhereCondition(dto),
+      sortDirection,
+    );
 
-      this.logger.verbose(
-        `Request for a list of meetups. User got ${meetups.length} rows.`,
-      );
+    this.logger.verbose(
+      `Request for a list of meetups. User got ${meetups.length} rows.`,
+    );
 
-      return { page, limit, meetups };
-    } catch (error) {
-      this.logger.error(error);
-
-      throw new InternalServerErrorException();
-    }
+    return { page, limit, meetups };
   }
 
   async getMeetupById(id: number): Promise<MeetupWithPlaceAndTags> {

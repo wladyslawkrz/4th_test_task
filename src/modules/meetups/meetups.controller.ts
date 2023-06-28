@@ -25,15 +25,32 @@ import {
 } from 'src/common';
 import { Meetup, Prisma, Role } from '@prisma/client';
 import { MeetupsInterceptor } from 'src/common/interceptors';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({
+  description: 'Access token required',
+})
+@ApiInternalServerErrorResponse({
+  description: 'An error occurred while executing the request on the server',
+})
 @ApiTags('Meetup actions')
 @UseGuards(JwtAccessGuard)
 @Controller('meetups')
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
+  @ApiOkResponse({ description: 'Data received successfully' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
   @Get()
@@ -49,6 +66,8 @@ export class MeetupsController {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
+  @ApiOkResponse({ description: 'Data received successfully' })
+  @ApiNotFoundResponse({ description: 'Meetup was not found' })
   @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
@@ -59,6 +78,11 @@ export class MeetupsController {
     return this.meetupsService.getMeetupById(id);
   }
 
+  @ApiCreatedResponse({ description: 'Meetup has been created successfully' })
+  @ApiForbiddenResponse({
+    description:
+      'You do not have access to this meetup or you are not an organizer',
+  })
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
@@ -70,6 +94,12 @@ export class MeetupsController {
     return this.meetupsService.postMeetup(userId, dto);
   }
 
+  @ApiOkResponse({ description: 'Meetup has been updated successfully' })
+  @ApiNotFoundResponse({ description: 'Meetup was not found' })
+  @ApiForbiddenResponse({
+    description:
+      'You do not have access to this meetup or you are not an organizer',
+  })
   @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
@@ -83,8 +113,13 @@ export class MeetupsController {
     return this.meetupsService.updateMeetupInfo(userId, id, dto);
   }
 
+  @ApiOkResponse({ description: 'Meetup has been deleted successfully' })
+  @ApiForbiddenResponse({
+    description:
+      'You do not have access to this meetup or you are not an organizer',
+  })
   @ApiParam({ name: 'id', description: 'Enter meetup id' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
