@@ -8,22 +8,22 @@ import {
 } from 'class-validator';
 
 export class CreatePlaceDto {
-  @ApiProperty()
+  @ApiProperty({ minLength: 1, maxLength: 20, default: 'Mahilyow' })
   @IsString()
   @Length(1, 20)
   city: string;
 
-  @ApiProperty()
+  @ApiProperty({ minLength: 1, maxLength: 40, default: 'Leninskaja' })
   @IsString()
   @Length(1, 40)
   street: string;
 
-  @ApiProperty()
+  @ApiProperty({ minLength: 1, maxLength: 15, default: '123B' })
   @IsString()
   @Length(1, 15)
   building: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: 'number', minimum: 1, default: 101 })
   @IsNumber()
   @IsPositive()
   @IsOptional()

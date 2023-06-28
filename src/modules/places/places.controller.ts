@@ -16,16 +16,33 @@ import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Place, Prisma, Role } from '@prisma/client';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { PlacesInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({
+  description: 'Access token required',
+})
+@ApiInternalServerErrorResponse({
+  description: 'An error occurred while executing the request on the server',
+})
 @ApiTags('Places')
 @UseGuards(JwtAccessGuard)
 @Controller('places')
 export class PlacesController {
   constructor(private placesService: PlacesService) {}
 
+  @ApiOkResponse({ description: 'Data received successfully' })
   @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -33,6 +50,8 @@ export class PlacesController {
     return this.placesService.getAllPlaces();
   }
 
+  @ApiOkResponse({ description: 'Data received successfully' })
+  @ApiNotFoundResponse({ description: 'Place not found' })
   @ApiParam({ name: 'id', description: 'Enter place id' })
   @UseInterceptors(PlacesInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -41,6 +60,10 @@ export class PlacesController {
     return this.placesService.getPlace(id);
   }
 
+  @ApiCreatedResponse({ description: 'New place has been created' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to perform this action',
+  })
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
@@ -49,6 +72,11 @@ export class PlacesController {
     return this.placesService.addPlace(dto);
   }
 
+  @ApiOkResponse({ description: 'Place has been updated successfully' })
+  @ApiNotFoundResponse({ description: 'Place not found' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to perform this action',
+  })
   @ApiParam({ name: 'id', description: 'Enter place id' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
@@ -61,8 +89,13 @@ export class PlacesController {
     return this.placesService.updatePlace(dto, id);
   }
 
+  @ApiOkResponse({ description: 'Place has been deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Place not found' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to perform this action',
+  })
   @ApiParam({ name: 'id', description: 'Enter place id' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
