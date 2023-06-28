@@ -28,6 +28,9 @@ import {
 } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 
+@ApiInternalServerErrorResponse({
+  description: 'An error occurred while executing the request on the server',
+})
 @ApiTags('Authorization')
 @Controller('auth')
 export class AuthController {
@@ -39,9 +42,6 @@ export class AuthController {
   @ApiConflictResponse({
     description: 'Credentials that you entered are not unique',
   })
-  @ApiInternalServerErrorResponse({
-    description: 'An error occurred while executing the request on the server',
-  })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
   signUp(
@@ -52,9 +52,6 @@ export class AuthController {
   }
 
   @ApiOkResponse({ description: 'Logged in successfully' })
-  @ApiInternalServerErrorResponse({
-    description: 'An error occurred while executing the request on the server',
-  })
   @ApiForbiddenResponse({ description: 'Given credentials are incorrect' })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
@@ -69,9 +66,6 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Access token required',
   })
-  @ApiInternalServerErrorResponse({
-    description: 'An error occurred while executing the request on the server',
-  })
   @UseGuards(JwtAccessGuard)
   @HttpCode(HttpStatus.OK)
   @Post('logout')
@@ -85,9 +79,6 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Refresh token required' })
   @ApiForbiddenResponse({ description: 'Invalid refresh token, access denied' })
   @ApiNoContentResponse({ description: 'Refreshed tokens successfully' })
-  @ApiInternalServerErrorResponse({
-    description: 'An error occurred while executing the request on the server',
-  })
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('refresh')
