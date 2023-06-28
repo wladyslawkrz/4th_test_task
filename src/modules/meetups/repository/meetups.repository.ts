@@ -37,6 +37,40 @@ export class MeetupsRepository implements IMeetupsRepository {
     return meetups;
   }
 
+  async getUserMeetups(
+    id: number,
+    page: number,
+    limit: number,
+  ): Promise<MeetupWithPlaceAndTags[]> {
+    const meetups = await this.prisma.meetup.findMany({
+      take: limit,
+      skip: (page - 1) * limit,
+      include: {
+        users: {
+          include: {
+            user: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        place: true,
+      },
+
+      where: {
+        users: {
+          some: {
+            userId: id,
+          },
+        },
+      },
+    });
+
+    return meetups;
+  }
+
   async getMeetupById(meetupId: number): Promise<MeetupWithPlaceAndTags> {
     const meetup = await this.prisma.meetup.findUnique({
       where: {

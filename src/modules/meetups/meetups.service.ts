@@ -50,6 +50,18 @@ export class MeetupsService {
     return meetup;
   }
 
+  async getCurrentUserMeetups(id: number, page: number, limit: number) {
+    const meetups = await this.meetupsRepository.getUserMeetups(
+      id,
+      page,
+      limit,
+    );
+
+    this.logger.verbose(`Request for user's [id ${id}] meetups`);
+
+    return { page, limit, meetups };
+  }
+
   async postMeetup(userId: number, dto: PostMeetupDto): Promise<Meetup> {
     const createdMeetup = await this.meetupsRepository.createMeetup(
       userId,

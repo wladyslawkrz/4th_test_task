@@ -10,6 +10,11 @@ export interface IMeetupsRepository {
     condition: Prisma.MeetupWhereInput,
     sortDirection: SortDirections,
   ): Promise<MeetupWithPlaceAndTags[]>;
+  getUserMeetups(
+    userId: number,
+    page: number,
+    limit: number,
+  ): Promise<MeetupWithPlaceAndTags[]>;
   getMeetupById(meetupId: number): Promise<MeetupWithPlaceAndTags>;
   createMeetup(userId: number, dto: PostMeetupDto): Promise<Meetup>;
   updateMeetup(

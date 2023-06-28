@@ -6,7 +6,8 @@ export class MeetupsDto {
   meetupDescription: string;
   meetingTime: Date;
   meetingPlace: string;
-  tags?: string;
+  meetupCreatorId: number;
+  tags: string;
 
   constructor(meetup: Meetup, place: string, tags: string) {
     this.id = meetup.id;
@@ -14,6 +15,7 @@ export class MeetupsDto {
     this.meetupDescription = meetup.meetupDescription;
     this.meetingTime = meetup.meetingTime;
     this.meetingPlace = place;
+    this.meetupCreatorId = meetup.meetupCreatorId;
     this.tags = tags;
   }
 }

@@ -32,6 +32,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -50,6 +51,7 @@ import {
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
+  @ApiOperation({ summary: 'Get meetups info' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
@@ -67,6 +69,16 @@ export class MeetupsController {
   }
 
   @ApiOkResponse({ description: 'Data received successfully' })
+  @UseInterceptors(MeetupsInterceptor)
+  @Get('current-user-meetups')
+  getCurrentUserMeetups(
+    @GetUserId() userId: number,
+    @Query('page', new PaginationPipe(1)) page: number,
+    @Query('limit', new PaginationPipe(10)) limit: number,
+  ) {
+    return this.meetupsService.getCurrentUserMeetups(userId, page, limit);
+  }
+
   @ApiNotFoundResponse({ description: 'Meetup was not found' })
   @ApiParam({ name: 'id', description: 'Enter meetup id' })
   @HttpCode(HttpStatus.OK)
