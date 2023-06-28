@@ -3,17 +3,17 @@ import { Role } from '@prisma/client';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ default: 'FirstName' })
   @IsOptional()
   @IsString()
   firstName?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ default: 'LastName' })
   @IsOptional()
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ enum: Role })
   @IsOptional()
   @IsEnum(Role)
   userRole?: Role;
