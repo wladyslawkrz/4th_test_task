@@ -15,7 +15,7 @@ import {
 import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
 import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
-import { Role } from '@prisma/client';
+import { Prisma, Role, Tag } from '@prisma/client';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -25,6 +25,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -44,14 +45,16 @@ import { TagsInterceptor } from 'src/common/interceptors';
 export class TagsController {
   constructor(private tagsService: TagsService) {}
 
+  @ApiOperation({ summary: 'Get a list of tags' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @UseInterceptors(TagsInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllTags() {
+  getAllTags(): Promise<Tag[]> {
     return this.tagsService.getAll();
   }
 
+  @ApiOperation({ summary: 'Get a specific tag' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @ApiParam({ name: 'id', description: 'Enter tag id' })
   @UseInterceptors(TagsInterceptor)
@@ -60,6 +63,8 @@ export class TagsController {
   getTag(@Param('id', ParseIntPipe) id: number) {
     return this.tagsService.getTag(id);
   }
+
+  @ApiOperation({ summary: 'Create new tag' })
   @ApiCreatedResponse({ description: 'Tag has been created' })
   @ApiConflictResponse({
     description: 'Check data that you have entered for uniqueness',
@@ -71,10 +76,11 @@ export class TagsController {
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Post('create')
-  createTag(@Body() dto: CreateTagDto) {
+  createTag(@Body() dto: CreateTagDto): Promise<Tag> {
     return this.tagsService.createTag(dto);
   }
 
+  @ApiOperation({ summary: 'Update tag name' })
   @ApiOkResponse({ description: 'Tag has been updated' })
   @ApiNotFoundResponse({ description: 'Tag was not found' })
   @ApiForbiddenResponse({
@@ -85,10 +91,14 @@ export class TagsController {
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Put('update/:id')
-  updateTag(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateTagDto) {
+  updateTag(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateTagDto,
+  ): Promise<Prisma.BatchPayload> {
     return this.tagsService.updateTag(dto, id);
   }
 
+  @ApiOperation({ summary: 'Delete tag' })
   @ApiNoContentResponse({ description: 'Tag has been deleted' })
   @ApiNotFoundResponse({ description: 'Tag was not found' })
   @ApiForbiddenResponse({
@@ -99,7 +109,9 @@ export class TagsController {
   @UseGuards(RolesGuard)
   @Roles(Role.Organizer)
   @Delete('delete/:id')
-  deleteTag(@Param('id', ParseIntPipe) id: number) {
+  deleteTag(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Prisma.BatchPayload> {
     return this.tagsService.deleteTag(id);
   }
 }

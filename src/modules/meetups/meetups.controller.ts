@@ -32,6 +32,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -50,6 +51,7 @@ import {
 export class MeetupsController {
   constructor(private meetupsService: MeetupsService) {}
 
+  @ApiOperation({ summary: 'Getting a list of meetups' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(MeetupsInterceptor)
@@ -66,6 +68,7 @@ export class MeetupsController {
     return this.meetupsService.getAllMeetups(page, limit, params);
   }
 
+  @ApiOperation({ summary: 'Getting a specific meetup' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @ApiNotFoundResponse({ description: 'Meetup was not found' })
   @ApiParam({ name: 'id', description: 'Enter meetup id' })
@@ -78,6 +81,7 @@ export class MeetupsController {
     return this.meetupsService.getMeetupById(id);
   }
 
+  @ApiOperation({ summary: 'Create a meetup' })
   @ApiCreatedResponse({ description: 'Meetup has been created successfully' })
   @ApiForbiddenResponse({
     description:
@@ -94,6 +98,7 @@ export class MeetupsController {
     return this.meetupsService.postMeetup(userId, dto);
   }
 
+  @ApiOperation({ summary: 'Meetup information update' })
   @ApiOkResponse({ description: 'Meetup has been updated successfully' })
   @ApiNotFoundResponse({ description: 'Meetup was not found' })
   @ApiForbiddenResponse({
@@ -113,6 +118,7 @@ export class MeetupsController {
     return this.meetupsService.updateMeetupInfo(userId, id, dto);
   }
 
+  @ApiOperation({ summary: 'Remove meetup' })
   @ApiOkResponse({ description: 'Meetup has been deleted successfully' })
   @ApiForbiddenResponse({
     description:

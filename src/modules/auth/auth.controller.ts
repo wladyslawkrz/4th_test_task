@@ -23,6 +23,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -36,6 +37,7 @@ import { Prisma } from '@prisma/client';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'User registration' })
   @ApiCreatedResponse({
     description: 'The account has been successfully created',
   })
@@ -51,6 +53,7 @@ export class AuthController {
     return this.authService.signUp(dto, response);
   }
 
+  @ApiOperation({ summary: 'User authorization' })
   @ApiOkResponse({ description: 'Logged in successfully' })
   @ApiForbiddenResponse({ description: 'Given credentials are incorrect' })
   @HttpCode(HttpStatus.OK)
@@ -62,6 +65,7 @@ export class AuthController {
     return this.authService.signIn(dto, response);
   }
 
+  @ApiOperation({ summary: 'End session' })
   @ApiOkResponse({ description: 'Logged out successfully' })
   @ApiUnauthorizedResponse({
     description: 'Access token required',
@@ -76,6 +80,7 @@ export class AuthController {
     return this.authService.logout(userId, response);
   }
 
+  @ApiOperation({ summary: 'Get new pair of tokens using RefreshToken' })
   @ApiUnauthorizedResponse({ description: 'Refresh token required' })
   @ApiForbiddenResponse({ description: 'Invalid refresh token, access denied' })
   @ApiNoContentResponse({ description: 'Refreshed tokens successfully' })
