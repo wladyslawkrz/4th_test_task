@@ -2,22 +2,22 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthSignUpDto {
-  @ApiProperty()
+  @ApiProperty({ default: 'john-doe@example.com' })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'myVeryStrongPassword' })
   @IsString()
   @IsNotEmpty()
   password: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ default: 'John' })
   @IsString()
   @IsOptional()
   firstName?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ default: 'Doe' })
   @IsString()
   @IsOptional()
   lastName?: string;
