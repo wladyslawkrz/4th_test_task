@@ -48,6 +48,9 @@ export class TagsService {
   }
 
   async deleteTag(id: number): Promise<Prisma.BatchPayload> {
+    const tag = await this.tagsRepository.getOneTag(id);
+    if (!tag) throw new NotFoundException('This tag was not found');
+
     const deletionResult = await this.tagsRepository.deleteTag(id);
 
     this.logger.verbose(`Tag [id ${id}] was deleted.`);
