@@ -1,4 +1,5 @@
-FROM node:18-alpine
+FROM node:18
+# с alpine образом почему-то крашится приложение при попытке зарегать пользователя.
 
 WORKDIR /app
 
@@ -10,7 +11,5 @@ RUN yarn install
 COPY . .
 
 EXPOSE 8080/tcp
-
 EXPOSE 8080/udp
-
 CMD ["yarn", "start:docker"]
