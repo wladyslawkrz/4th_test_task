@@ -5,8 +5,13 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY yarn.lock ./
+COPY ./prisma ./
+
 
 RUN yarn install
+RUN yarn add @prisma/client
+
+RUN npx prisma generate
 
 COPY . .
 
