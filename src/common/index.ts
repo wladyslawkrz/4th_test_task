@@ -4,3 +4,7 @@ export * from './guard';
 export * from './filters';
 export * from './decorators';
 export * from './pipes';
+export * from './enum';
+export * from './interceptors';
+export * from './types';
+export * from './swagger';

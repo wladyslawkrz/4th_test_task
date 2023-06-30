@@ -4,10 +4,10 @@ import {
   AuthModule,
   MeetupsModule,
   PlacesModule,
+  PrismaModule,
   TagsModule,
   UsersModule,
 } from './modules';
-import { PrismaModule } from './modules/prisma/prisma.module';
 import { appConfigValidationSchema } from './config';
 
 @Module({

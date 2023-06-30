@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto, UpdateTagDto } from './dto';
-import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
+import { JwtAccessGuard, Roles, RolesGuard, TagsInterceptor } from 'src/common';
 import { Prisma, Role, Tag } from '@prisma/client';
 import {
   ApiBearerAuth,
@@ -30,7 +30,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { TagsInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
 @ApiTags('Tags')

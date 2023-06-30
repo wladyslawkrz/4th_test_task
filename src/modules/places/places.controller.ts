@@ -14,7 +14,12 @@ import {
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
-import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
+import {
+  JwtAccessGuard,
+  PlacesInterceptor,
+  Roles,
+  RolesGuard,
+} from 'src/common';
 import { Place, Prisma, Role } from '@prisma/client';
 import {
   ApiBearerAuth,
@@ -28,7 +33,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PlacesInterceptor } from 'src/common/interceptors';
 
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({

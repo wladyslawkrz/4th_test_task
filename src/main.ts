@@ -3,8 +3,11 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { AllExceptionsFilter, PrismaExceptionFilter } from './common';
-import { initializeSwaggerDocument } from './common/swagger';
+import {
+  AllExceptionsFilter,
+  PrismaExceptionFilter,
+  initializeSwaggerDocument,
+} from './common';
 
 async function bootstrap() {
   const logger = new Logger('App-Main');

@@ -9,11 +9,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetUserId } from 'src/common';
-import { JwtAccessGuard } from 'src/common';
+import { GetUserId, JwtAccessGuard, UsersInterceptor } from 'src/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto';
-import { RegistrateUserDto } from './dto/registrate.user.dto';
+import { RegistrateUserDto, UpdateUserDto } from './dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -23,7 +21,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UsersInterceptor } from 'src/common/interceptors';
 import { Prisma, User, UserOnMeetup } from '@prisma/client';
 
 @ApiBearerAuth()

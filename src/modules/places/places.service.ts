@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreatePlaceDto, UpdatePlaceDto } from './dto';
-import { PlacesRepository } from './repository/places.repository';
 import { Place, Prisma } from '@prisma/client';
+import { PlacesRepository } from './repository';
 
 @Injectable()
 export class PlacesService {

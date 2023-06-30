@@ -5,10 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PostMeetupDto, UpdateMeetupDto, QueryParamsDto } from './dto';
-import { SortDirections } from 'src/common/enum';
-import { MeetupsRepository } from './repository/meetups.repository';
 import { Meetup, Prisma } from '@prisma/client';
-import { MeetupWithPlaceAndTags } from 'src/common';
+import { MeetupWithPlaceAndTags, SortDirections } from 'src/common';
+import { MeetupsRepository } from './repository';
 
 @Injectable()
 export class MeetupsService {

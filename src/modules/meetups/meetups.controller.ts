@@ -19,12 +19,12 @@ import {
   GetUserId,
   JwtAccessGuard,
   MeetupWithPlaceAndTags,
+  MeetupsInterceptor,
   PaginationPipe,
   Roles,
   RolesGuard,
 } from 'src/common';
 import { Meetup, Prisma, Role } from '@prisma/client';
-import { MeetupsInterceptor } from 'src/common/interceptors';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,

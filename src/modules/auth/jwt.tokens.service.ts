@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Prisma, Role } from '@prisma/client';
 import * as argon from 'argon2';
 import { Response } from 'express';
-import { Tokens } from 'src/common/types';
 import { AuthRepository } from './repository';
+import { Tokens } from 'src/common';
 
 @Injectable()
 export class JwtTokensService {
