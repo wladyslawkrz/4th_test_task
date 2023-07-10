@@ -1,15 +1,16 @@
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { Expose } from 'class-transformer';
 
 export class UsersDto {
+  @Expose()
   id: number;
-  firstName: string;
-  lastName: string;
-  userRole: Role;
 
-  constructor(user: User) {
-    this.id = user.id;
-    this.firstName = user.firstName;
-    this.lastName = user.lastName;
-    this.userRole = user.userRole;
-  }
+  @Expose()
+  firstName: string;
+
+  @Expose()
+  lastName: string;
+
+  @Expose()
+  userRole: Role;
 }

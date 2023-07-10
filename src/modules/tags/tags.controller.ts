@@ -10,11 +10,10 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
-import { CreateTagDto, UpdateTagDto } from './dto';
-import { JwtAccessGuard, Roles, RolesGuard, TagsInterceptor } from 'src/common';
+import { CreateTagDto, TagsDto, UpdateTagDto } from './dto';
+import { JwtAccessGuard, Roles, RolesGuard, Serialize } from 'src/common';
 import { Prisma, Role, Tag } from '@prisma/client';
 import {
   ApiBearerAuth,
@@ -46,7 +45,7 @@ export class TagsController {
 
   @ApiOperation({ summary: 'Get a list of tags' })
   @ApiOkResponse({ description: 'Data received successfully' })
-  @UseInterceptors(TagsInterceptor)
+  @Serialize(TagsDto)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllTags(): Promise<Tag[]> {
@@ -56,7 +55,7 @@ export class TagsController {
   @ApiOperation({ summary: 'Get a specific tag' })
   @ApiOkResponse({ description: 'Data received successfully' })
   @ApiParam({ name: 'id', description: 'Enter tag id' })
-  @UseInterceptors(TagsInterceptor)
+  @Serialize(TagsDto)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getTag(@Param('id', ParseIntPipe) id: number) {

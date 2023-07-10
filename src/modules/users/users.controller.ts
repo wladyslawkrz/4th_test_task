@@ -7,11 +7,10 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { GetUserId, JwtAccessGuard, UsersInterceptor } from 'src/common';
+import { GetUserId, JwtAccessGuard, Serialize } from 'src/common';
 import { UsersService } from './users.service';
-import { RegistrateUserDto, UpdateUserDto } from './dto';
+import { RegistrateUserDto, UpdateUserDto, UsersDto } from './dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -38,7 +37,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get a list of users' })
   @ApiOkResponse({ description: 'Data received successfully' })
-  @UseInterceptors(UsersInterceptor)
+  @Serialize(UsersDto)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllUsers(): Promise<User[]> {
@@ -47,7 +46,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get current user info' })
   @ApiOkResponse({ description: 'Data received successfully' })
-  @UseInterceptors(UsersInterceptor)
+  @Serialize(UsersDto)
   @HttpCode(HttpStatus.OK)
   @Get('current')
   getCurrentUser(@GetUserId() userId: number): Promise<User> {

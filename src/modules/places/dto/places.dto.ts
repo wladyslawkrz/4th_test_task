@@ -1,17 +1,18 @@
-import { Place } from '@prisma/client';
+import { Expose } from 'class-transformer';
 
 export class PlacesDto {
+  @Expose()
   id: number;
-  city: string;
-  street: string;
-  building: string;
-  room: number;
 
-  constructor(place: Place) {
-    this.id = place.id;
-    this.city = place.city;
-    this.street = place.street;
-    this.building = place.building;
-    this.room = place.room;
-  }
+  @Expose()
+  city: string;
+
+  @Expose()
+  street: string;
+
+  @Expose()
+  building: string;
+
+  @Expose()
+  room: number;
 }

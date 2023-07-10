@@ -10,16 +10,10 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
-import { CreatePlaceDto, UpdatePlaceDto } from './dto';
-import {
-  JwtAccessGuard,
-  PlacesInterceptor,
-  Roles,
-  RolesGuard,
-} from 'src/common';
+import { CreatePlaceDto, PlacesDto, UpdatePlaceDto } from './dto';
+import { JwtAccessGuard, Roles, RolesGuard } from 'src/common';
 import { Place, Prisma, Role } from '@prisma/client';
 import {
   ApiBearerAuth,
@@ -33,6 +27,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({
@@ -49,7 +44,7 @@ export class PlacesController {
 
   @ApiOperation({ summary: 'Get a list places' })
   @ApiOkResponse({ description: 'Data received successfully' })
-  @UseInterceptors(PlacesInterceptor)
+  @Serialize(PlacesDto)
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllPlaces(): Promise<Place[]> {
@@ -60,7 +55,7 @@ export class PlacesController {
   @ApiOkResponse({ description: 'Data received successfully' })
   @ApiNotFoundResponse({ description: 'Place not found' })
   @ApiParam({ name: 'id', description: 'Enter place id' })
-  @UseInterceptors(PlacesInterceptor)
+  @Serialize(PlacesDto)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getPlace(@Param('id', ParseIntPipe) id: number): Promise<Place> {
