@@ -1,5 +1,7 @@
 # Meetup API task.
 
+Develop a CRUD REST Web API to work with meetups.
+
 ## Used technologies
 
 * NestJS
