@@ -60,7 +60,7 @@ export class JwtTokensService {
 
   sendAccessTokenWithCookies(response: Response, access_token: string): void {
     response.cookie('access_token', access_token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
     });
   }

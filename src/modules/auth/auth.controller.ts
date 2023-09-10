@@ -8,12 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import {
-  JwtAccessGuard,
-  JwtRefreshGuard,
-  GetUser,
-  GetUserId,
-} from 'src/common';
+import { JwtRefreshGuard, GetUser, GetUserId } from 'src/common';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto, AuthSignInDto } from './dto';
 import {
@@ -46,11 +41,11 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
-  signUp(
+  async signUp(
     @Body() dto: AuthSignUpDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    return this.authService.signUp(dto, response);
+    return await this.authService.signUp(dto, response);
   }
 
   @ApiOperation({ summary: 'User authorization' })
@@ -58,11 +53,11 @@ export class AuthController {
   @ApiForbiddenResponse({ description: 'Given credentials are incorrect' })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signIn(
+  async signIn(
     @Body() dto: AuthSignInDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    return this.authService.signIn(dto, response);
+    return await this.authService.signIn(dto, response);
   }
 
   @ApiOperation({ summary: 'End session' })
@@ -70,14 +65,14 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Access token required',
   })
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
   @Post('logout')
-  logout(
-    @GetUserId() userId: number,
+  async logout(
+    @GetUser('sub') userId: number,
     @Res({ passthrough: true }) response: Response,
   ): Promise<Prisma.BatchPayload> {
-    return this.authService.logout(userId, response);
+    return await this.authService.logout(userId, response);
   }
 
   @ApiOperation({ summary: 'Get new pair of tokens using RefreshToken' })
@@ -87,11 +82,11 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('refresh')
-  refreshTokens(
+  async refreshTokens(
     @GetUserId() userId: number,
     @GetUser('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    return this.authService.refreshTokens(userId, refreshToken, response);
+    return await this.authService.refreshTokens(userId, refreshToken, response);
   }
 }
